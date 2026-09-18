@@ -1,99 +1,63 @@
-ATU Assessment Dates 2026–2027
-================================
+ATU ASSESSMENT REFERENCE - ACADEMIC YEAR 2026-2027
+====================================================
 
-All dates are in the 2026–2027 academic year.
+PURPOSE
+-------
+Structured reference for an LLM or other assistant. It lists every
+assessment module, formal module name, date, assessment name, display
+label, weighting, and counting rule.
 
-CHRONOLOGICAL SCHEDULE
-----------------------
+DATE FORMAT
+-----------
+Dates use ISO format: YYYY-MM-DD.
+Academic year: 2026-09-01 through 2027-08-31.
+Weight values are percentages without the percent sign.
 
-Saturday 17 October 2026
-  WebAD — MCQ1                                      10%
+MODULE KEY
+----------
+SDPD  = Software Design & Program Development
+WebAD = Web Application Development
+CSSP  = Cybersecurity & Secure Programming
 
-Monday 2 November 2026
-  SDPD — Lab Exam 1                                 10%
+ASSESSMENT RECORDS
+-------------------
+Fields:
+module_code | formal_module_name | date | weekday | assessment_name | display_label | weight_percent | status | counting_rule
 
-Thursday 5 November 2026
-  SDPD — MCQ1                                       7.5%
+WebAD | Web Application Development | 2026-10-17 | Saturday | MCQ1 | WebAD: MCQ1 | 10 | required | counts toward module total
+SDPD | Software Design & Program Development | 2026-11-02 | Monday | Lab Exam 1 | SDPD - Lab Exam 1 | 10 | required | counts toward module total
+SDPD | Software Design & Program Development | 2026-11-05 | Thursday | MCQ1 | SDPD - MCQ1 | 7.5 | required | counts toward best 4 of 5 MCQs
+CSSP | Cybersecurity & Secure Programming | 2026-11-10 | Tuesday | Moodle Quiz | CSSP: Moodle Quiz | 20 | required | counts toward module total
+WebAD | Web Application Development | 2026-11-14 | Saturday | MCQ2 | WebAD: MCQ2 | 20 | required | counts toward module total
+SDPD | Software Design & Program Development | 2026-12-10 | Thursday | MCQ2 | SDPD - MCQ2 | 7.5 | required | counts toward best 4 of 5 MCQs
+WebAD | Web Application Development | 2026-12-12 | Saturday | MCQ3 | WebAD: MCQ3 | 30 | required | counts toward module total
+SDPD | Software Design & Program Development | 2026-12-14 | Monday | Lab Exam 2 | SDPD - Lab Exam 2 | 10 | required | counts toward module total
+CSSP | Cybersecurity & Secure Programming | 2026-12-15 | Tuesday | Written Exam | CSSP: Written Exam | 50 | required | counts toward module total
+WebAD | Web Application Development | 2027-01-11 | Monday | Project Submission | WebAD: Project Submission | 40 | required | counts toward module total
+CSSP | Cybersecurity & Secure Programming | 2027-01-11 | Monday | Project Submission | CSSP: Project Submission | 30 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-01-21 | Thursday | Micro 1 | SDPD - Micro 1 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-01-28 | Thursday | Micro 2 | SDPD - Micro 2 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-02-04 | Thursday | Micro 3 | SDPD - Micro 3 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-02-11 | Thursday | Micro 4 | SDPD - Micro 4 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-02-18 | Thursday | Micro 5 | SDPD - Micro 5 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-02-25 | Thursday | Micro 6 | SDPD - Micro 6 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-03-01 | Monday | Lab Exam 3 | SDPD - Lab Exam 3 | 20 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-03-04 | Thursday | MCQ3 | SDPD - MCQ3 | 7.5 | required | counts toward best 4 of 5 MCQs
+SDPD | Software Design & Program Development | 2027-03-11 | Thursday | Micro 7 | SDPD - Micro 7 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-03-18 | Thursday | Micro 8 | SDPD - Micro 8 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-04-08 | Thursday | Micro 9 | SDPD - Micro 9 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-04-15 | Thursday | Micro 10 | SDPD - Micro 10 | 1 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-04-22 | Thursday | MCQ4 | SDPD - MCQ4 | 7.5 | required | counts toward best 4 of 5 MCQs
+SDPD | Software Design & Program Development | 2027-04-26 | Monday | Lab Exam 4 | SDPD - Lab Exam 4 | 20 | required | counts toward module total
+SDPD | Software Design & Program Development | 2027-04-29 | Thursday | MCQ5 (optional) | SDPD - MCQ5 (optional) | 7.5 | optional | excluded; best 4 of 5 MCQs count
 
-Tuesday 10 November 2026
-  CSSP — Moodle Quiz                                20%
+MODULE TOTAL RULES
+------------------
+SDPD required total: 100%. MCQ5 is optional and excluded; best 4 of 5 MCQs count.
+WebAD required total: 100%. All listed assessments count.
+CSSP required total: 100%. All listed assessments count.
 
-Saturday 14 November 2026
-  WebAD — MCQ2                                      20%
-
-Thursday 10 December 2026
-  SDPD — MCQ2                                       7.5%
-
-Saturday 12 December 2026
-  WebAD — MCQ3                                      30%
-
-Monday 14 December 2026
-  SDPD — Lab Exam 2                                 10%
-
-Tuesday 15 December 2026
-  CSSP — Written Exam                               50%
-
-Monday 11 January 2027
-  WebAD — Project Submission                        40%
-  CSSP — Project Submission                         30%
-
-Thursday 21 January 2027
-  SDPD — Micro 1                                    1%
-
-Thursday 28 January 2027
-  SDPD — Micro 2                                    1%
-
-Thursday 4 February 2027
-  SDPD — Micro 3                                    1%
-
-Thursday 11 February 2027
-  SDPD — Micro 4                                    1%
-
-Thursday 18 February 2027
-  SDPD — Micro 5                                    1%
-
-Thursday 25 February 2027
-  SDPD — Micro 6                                    1%
-
-Monday 1 March 2027
-  SDPD — Lab Exam 3                                 20%
-
-Thursday 4 March 2027
-  SDPD — MCQ3                                       7.5%
-
-Thursday 11 March 2027
-  SDPD — Micro 7                                    1%
-
-Thursday 18 March 2027
-  SDPD — Micro 8                                    1%
-
-Thursday 8 April 2027
-  SDPD — Micro 9                                    1%
-
-Thursday 15 April 2027
-  SDPD — Micro 10                                   1%
-
-Thursday 22 April 2027
-  SDPD — MCQ4                                       7.5%
-
-Monday 26 April 2027
-  SDPD — Lab Exam 4                                 20%
-
-Thursday 29 April 2027
-  SDPD — MCQ5 (optional)                             7.5%
-
-
-MODULE TOTALS
--------------
-
-SDPD — Software Design & Program Development
-  Required total: 100%
-  Optional: MCQ5 is not included in the required total;
-            the best 4 of the 5 MCQs count.
-  Micro assessments: 10 × 1%
-
-WebAD — Web Application Development
-  Total: 100%
-
-CSSP — Cybersecurity & Secure Programming
-  Total: 100%
+VALIDATION SUMMARY
+------------------
+SDPD micro assessments: 10, each worth 1%.
+Easter-break micro assessments: none.
