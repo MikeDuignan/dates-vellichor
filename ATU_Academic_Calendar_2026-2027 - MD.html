@@ -1,0 +1,2997 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATU Academic Calendar 2026-2027</title>
+<style>
+@page { size: A4 landscape; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  font-family: "Segoe UI", "Calibri", Arial, sans-serif;
+  color: #1e293b;
+  background: #fff;
+}
+.page {
+  width: 297mm;
+  height: 210mm;
+  page-break-after: always;
+  position: relative;
+  padding: 8mm 12mm 6mm 12mm;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.page-viewport:last-child .page { page-break-after: auto; }
+
+/* ---------- Month page header ---------- */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2.5px solid #1e293b;
+  padding-bottom: 3mm;
+  margin-bottom: 3mm;
+}
+.month-name {
+  font-size: 22pt;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+.month-year {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 1mm;
+}
+.header-right { text-align: right; }
+.ay-badge {
+  display: inline-block;
+  background: #1e293b;
+  color: #fff;
+  font-size: 8pt;
+  font-weight: 600;
+  padding: 1.3mm 4mm;
+  border-radius: 20mm;
+  margin-bottom: 1.5mm;
+}
+.page-no {
+  font-size: 7.5pt;
+  color: #94a3b8;
+}
+
+/* ---------- Weekday row ---------- */
+.weekday-row {
+  display: grid;
+  gap: 1.2mm;
+  margin-bottom: 1.2mm;
+}
+.wd {
+  background: #1e293b;
+  color: #fff;
+  text-align: center;
+  font-size: 9.5pt;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 1.5mm 0;
+  border-radius: 1.5mm;
+}
+.wd-week {
+  background: transparent;
+  color: #94a3b8;
+  font-size: 7pt;
+}
+
+/* ---------- Grid ---------- */
+.grid {
+  display: grid;
+  gap: 1.8mm;
+  flex: 1;
+  min-height: 0;
+}
+.week {
+  display: grid;
+  gap: 1.8mm;
+  min-height: 0;
+}
+.weeklabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 10pt;
+  font-weight: 800;
+  line-height: 1.05;
+  color: #64748b;
+  background: #f8fafc;
+  border: none;
+  border-radius: 1.6mm;
+  padding: 1mm;
+  overflow: hidden;
+}
+.weeklabel.text {
+  font-size: 7.3pt;
+  letter-spacing: 0.2px;
+}
+.week.academic .weeklabel {
+  background: #bfdbfe;
+  color: #1e3a8a;
+}
+.week.reading .weeklabel {
+  background: #fed7aa;
+  color: #9a3412;
+}
+.week.easter .weeklabel {
+  background: #f5d0fe;
+  color: #86198f;
+}
+.cell {
+  background: #f8fafc;
+  border: none;
+  border-radius: 1.6mm;
+  padding: 1.3mm 1.5mm;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.cell.weekend { background: #f1f5f9; }
+.cell.empty { background: #fbfbfd; }
+.week.academic .cell:not(.empty) { background: #eaf2ff; }
+.week.reading .cell:not(.empty) { background: #fff3e8; }
+.week.easter .cell:not(.empty) { background: #fdf1ff; }
+.daynum {
+  font-size: 10.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 0.9mm;
+  flex: 0 0 auto;
+}
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6mm;
+  overflow: hidden;
+}
+.chip {
+  font-size: 11pt;
+  line-height: 1.25;
+  font-weight: 600;
+  padding: 0.6mm 1mm;
+  border-radius: 1mm;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9mm;
+}
+.chipdot {
+  width: 1.5mm;
+  height: 1.5mm;
+  border-radius: 50%;
+  margin-top: 0.6mm;
+  flex: 0 0 auto;
+}
+.chip-holiday { background:#fee2e2; color:#b91c1c; }
+.chip-exam    { background:#ede9fe; color:#6d28d9; }
+.chip-teach   { background:#dbeafe; color:#1d4ed8; }
+.chip-confer  { background:#dcfce7; color:#15803d; }
+.chip-council { background:#ffedd5; color:#c2410c; }
+.chip-results { background:#cffafe; color:#0e7490; }
+.chip-deadline{ background:#fef9c3; color:#a16207; }
+.chip-other   { background:#e2e8f0; color:#475569; }
+
+/* ---------- Assessment modules (used only by user-added Assessment items) ---------- */
+.chip-mod-sdpd { background:#fce7f3; color:#9d174d; }
+.chip-mod-cssp { background:#e0e7ff; color:#3730a3; }
+.chip-mod-wad  { background:#ccfbf1; color:#115e59; }
+.chip-mod-cf1  { background:#fef3c7; color:#78350f; }
+
+/* ---------- Screen-only responsive scaling + month nav ---------- */
+/* Each .page keeps its fixed A4-landscape mm size (so printing/export to PDF
+   is unaffected); on screen it's scaled by JS to fit within the browser
+   window (both width and height) so a whole month fits on one screen. */
+@media screen {
+  .month-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 92px;
+    height: 100vh;
+    overflow-y: auto;
+    background: #1e293b;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    z-index: 10;
+  }
+  .month-nav-title {
+    color: #94a3b8;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-align: center;
+    padding: 0 6px 8px;
+    margin: 0 10px 8px;
+    border-bottom: 1px solid #334155;
+  }
+  .month-nav button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: #cbd5e1;
+    font: inherit;
+    font-size: 9.5pt;
+    font-weight: 600;
+    padding: 9px 6px;
+    margin: 1px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .month-nav button:hover { background: #334155; }
+  .month-nav button.active { background: #3b82f6; color: #fff; }
+
+  .assess-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin: 0 8px 8px;
+    padding: 8px 4px;
+    border: none;
+    border-radius: 6px;
+    background: #334155;
+    color: #fff;
+    font: inherit;
+    font-size: 8.3pt;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .assess-nav-btn:hover { background: #475569; }
+  .assess-nav-dots { display: flex; gap: 3px; }
+  .assess-nav-dots span { width: 7px; height: 7px; border-radius: 50%; }
+  .month-nav-divider { height: 1px; background: #334155; margin: 0 10px 8px; }
+
+  .calendar-main {
+    margin-left: 92px;
+    padding: 8px;
+    min-height: 100vh;
+  }
+  .page-viewport {
+    margin: 0 auto 10px auto;
+  }
+  .page-viewport .page {
+    page-break-after: auto;
+  }
+
+  .cell:not(.empty) { cursor: pointer; }
+  .cell:not(.empty):hover { outline: 2px solid #93c5fd; outline-offset: -2px; }
+  .cell.today { outline: 2.5px solid #dc2626; outline-offset: -2.5px; }
+
+  .day-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  .day-modal-backdrop[hidden] { display: none; }
+  .day-modal {
+    background: #fff;
+    border-radius: 10px;
+    width: min(440px, 100%);
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 18px 20px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  }
+  .day-modal h3 { margin: 0 0 4px; font-size: 13pt; color: #0f172a; }
+  .day-modal .dm-sub { margin: 0 0 12px; font-size: 8.5pt; color: #94a3b8; }
+  .day-modal .dm-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+  .day-modal .dm-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 9.5pt;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .day-modal .dm-item:hover { background: #f1f5f9; }
+  .day-modal .dm-item .dm-text { flex: 1; }
+  .day-modal .dm-item .dm-del {
+    cursor: pointer;
+    font-weight: 800;
+    color: #94a3b8;
+    padding: 0 5px;
+    border-radius: 4px;
+  }
+  .day-modal .dm-item .dm-del:hover { color: #dc2626; background: #fee2e2; }
+  .day-modal .dm-empty { color: #94a3b8; font-size: 9.5pt; font-style: italic; margin-bottom: 14px; }
+  .day-modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 12px;
+  }
+  .day-modal input[type=text], .day-modal input[type=number], .day-modal input[type=date] {
+    font: inherit;
+    font-size: 10pt;
+    padding: 7px 9px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .dm-editing-hint { margin: 0; font-size: 8.5pt; color: #b45309; }
+  .dm-editing-hint a { color: #1e293b; }
+  .dm-colors { display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 0; }
+  .dm-swatch {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+  }
+  .dm-swatch.selected {
+    border-color: #1e293b;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1e293b;
+  }
+  .day-modal .dm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
+  .day-modal button {
+    font: inherit;
+    font-size: 9.5pt;
+    cursor: pointer;
+    border-radius: 6px;
+    border: none;
+    padding: 7px 14px;
+  }
+  .day-modal .dm-add { background: #1e293b; color: #fff; font-weight: 700; }
+  .day-modal .dm-close { background: #e2e8f0; color: #1e293b; font-weight: 700; }
+
+  .dm-types { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 2px 0; }
+  .dm-assess-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    background: #f1f5f9;
+    color: #334155;
+    font: inherit;
+    font-size: 8.5pt;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .dm-assess-btn.selected { border-color: #1e293b; background: #e2e8f0; }
+  .day-modal select {
+    font: inherit;
+    font-size: 10pt;
+    padding: 7px 9px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .assess-modal { width: min(1100px, 96vw); }
+  .assess-board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+    max-height: 58vh;
+    overflow-y: auto;
+  }
+  .assess-col { display: flex; flex-direction: column; background: #f8fafc; border-radius: 8px; overflow: hidden; min-width: 0; }
+  .assess-col.assess-col-hidden { opacity: 0.5; }
+  .assess-col-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 7px 6px 7px 10px;
+    font-size: 8.3pt;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .assess-col-name { flex: 1; text-align: center; }
+  .assess-col-toggle {
+    flex: 0 0 auto;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 9pt;
+    padding: 2px 3px;
+    opacity: 0.85;
+    line-height: 1;
+  }
+  .assess-col-toggle:hover { opacity: 1; }
+  .assess-col-body { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+  .assess-col-empty { font-size: 8pt; color: #94a3b8; font-style: italic; text-align: center; padding: 10px 4px; }
+  .assess-board-tools { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 10px; }
+  .assess-board-tools button {
+    font: inherit;
+    font-size: 8pt;
+    font-weight: 700;
+    background: #e2e8f0;
+    color: #1e293b;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .assess-board-tools button:hover { background: #cbd5e1; }
+  .print-month-btn {
+    display: block;
+    margin-top: 4px;
+    font: inherit;
+    font-size: 7pt;
+    font-weight: 700;
+    color: #64748b;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 10px;
+    padding: 3px 8px;
+    cursor: pointer;
+  }
+  .print-month-btn:hover { background: #e2e8f0; color: #1e293b; }
+  .month-nav .print-cal-btn { background: #475569; }
+  .month-nav .print-cal-btn:hover { background: #64748b; }
+  .assess-card { position: relative; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 7px 20px 7px 9px; cursor: pointer; }
+  .assess-card:hover { border-color: #94a3b8; }
+  .assess-card-date { font-size: 7.3pt; font-weight: 700; color: #64748b; margin-bottom: 2px; }
+  .assess-card-text { font-size: 9pt; font-weight: 600; color: #1e293b; }
+  .assess-card-weight {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 7.3pt;
+    font-weight: 800;
+    background: #1e293b;
+    color: #fff;
+    border-radius: 10px;
+    padding: 1px 7px;
+  }
+  .assess-card-del {
+    position: absolute;
+    top: 4px;
+    right: 5px;
+    color: #94a3b8;
+    font-weight: 800;
+    cursor: pointer;
+    padding: 0 3px;
+    border-radius: 4px;
+  }
+  .assess-card-del:hover { color: #dc2626; background: #fee2e2; }
+  .assess-add-row { display: flex; gap: 8px; }
+  .assess-add-row input[type=date], .assess-add-row select { flex: 2; min-width: 0; }
+  .assess-add-row input[type=number] { flex: 1; min-width: 70px; }
+
+  @media (max-width: 700px) {
+    .month-nav {
+      position: static;
+      width: 100%;
+      height: auto;
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    .month-nav-title { display: none; }
+    .month-nav button { flex: 0 0 auto; margin: 4px; }
+    .assess-nav-btn { flex-direction: row; flex: 0 0 auto; margin: 4px; }
+    .month-nav-divider { display: none; }
+    .calendar-main { margin-left: 0; }
+    .assess-board { grid-template-columns: 1fr; max-height: 50vh; }
+  }
+}
+@media print {
+  .month-nav { display: none; }
+  .calendar-main { margin-left: 0; padding: 0; min-height: 0; }
+  .page-viewport { margin: 0; }
+  .page-viewport .page { width: 297mm !important; height: 210mm !important; }
+  .day-modal-backdrop { display: none !important; }
+  .cell.today { outline: none; }
+  .print-month-btn { display: none !important; }
+
+  /* Print a single month: everything except the tagged page is hidden */
+  body.print-mode-month .page-viewport { display: none !important; }
+  body.print-mode-month .page-viewport.print-target { display: block !important; }
+
+  /* Print the assessment board on its own, in normal document flow */
+  body.print-mode-assessments .calendar-main,
+  body.print-mode-assessments .page-viewport {
+    display: none !important;
+  }
+  body.print-mode-assessments #assessModal {
+    display: block !important;
+    position: static !important;
+    background: none !important;
+    padding: 0 !important;
+  }
+  body.print-mode-assessments #assessModal .day-modal {
+    box-shadow: none !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  body.print-mode-assessments #assessModal .dm-sub,
+  body.print-mode-assessments #assessModal form,
+  body.print-mode-assessments .assess-board-tools,
+  body.print-mode-assessments .assess-col-toggle,
+  body.print-mode-assessments .assess-card-del {
+    display: none !important;
+  }
+  body.print-mode-assessments .assess-board {
+    display: flex !important;
+    flex-wrap: wrap;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  body.print-mode-assessments .assess-col { flex: 1 1 150px; }
+  body.print-mode-assessments .assess-col.assess-col-hidden { display: none !important; }
+}
+
+
+/* ================= Review changes: density, spans, legend, a11y ================= */
+
+/* Cells no longer clip: multi-day bars extend across neighbouring cells and
+   overflow is handled by JS with a "+N more" indicator instead. */
+.cell { overflow: visible; position: relative; min-width: 0; }
+.week > * { min-width: 0; }
+.chips { overflow: visible; }
+.chip { font-size: 9pt; line-height: 1.22; }
+/* A multi-day run is an in-flow (invisible) spacer in every cell it covers, plus one
+   absolutely positioned bar hung off the first cell's spacer, so the bar's width
+   never feeds back into the grid's column sizing. */
+.chip-spacer { visibility: hidden; pointer-events: none; position: relative; }
+.chip-spacer.chip-span-host { visibility: visible; background: transparent; color: transparent; }
+.chip-span { position: absolute; left: 0; top: 0; z-index: 2; box-shadow: 0 0 0 0.3mm rgba(255,255,255,0.9); }
+.chip-more {
+  font-size: 7pt;
+  font-weight: 700;
+  color: #475569;
+  padding: 0 1mm;
+  line-height: 1.2;
+}
+.chip-clipped { overflow: hidden; }
+/* On screen an event is one line, chopped with an ellipsis; hover shows the full text.
+   In print (and while measuring for print) the text wraps instead. */
+.chip-text { min-width: 0; }
+body:not(.print-layout) .chip-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* The ellipsis clip also clips ink: the tight line-height (1.22, against the font's
+   ~1.33 natural line box) leaves descenders (g, y, p) poking past the text box, and
+   overflow:hidden shaved their tips off. Pad the text a hair so the ink stays inside
+   the clip box; matching negative margins keep every chip height and gap unchanged. */
+body:not(.print-layout) .chip-text,
+body:not(.print-layout) .chip-desc {
+  padding-top: 0.14em; padding-bottom: 0.14em;
+  margin-top: -0.14em; margin-bottom: -0.14em;
+}
+body:not(.print-layout) .chip { align-items: center; }
+body:not(.print-layout) .chipdot { margin-top: 0; }
+/* Two-line assessment chip: time above, description below */
+.chip-text-2 { display: flex; flex-direction: column; min-width: 0; }
+.chip-time { font-size: 9pt; font-weight: 800; letter-spacing: 0.2px; line-height: 1.2; }
+.chip-desc { min-width: 0; }
+body:not(.print-layout) .chip-desc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body:not(.print-layout) .chip:has(.chip-text-2) { align-items: flex-start; }
+body:not(.print-layout) .chip:has(.chip-text-2) .chipdot { margin-top: 0.9mm; }
+body.print-layout .chip-time { font-size: 8.5pt; }
+/* Print layout (also applied on screen while measuring before a print): a touch
+   smaller so a full day fits an A4 cell without hiding anything. */
+body.print-layout .chip { font-size: 8.5pt; line-height: 1.15; padding: 0.5mm 1mm; }
+body.print-layout .daynum { font-size: 9.5pt; margin-bottom: 0.6mm; }
+body.print-layout .cell { padding: 1mm 1.3mm; }
+.weeklabel { flex-direction: column; }
+/* Module (assessment) chips are coloured inline from the module colour, and sit two
+   points larger than everything else so they stand out on the day */
+.chip-module { font-size: 11pt; font-weight: 700; }
+body.print-layout .chip-module { font-size: 10.5pt; }
+/* Days with one of your assessments get an orange ring (today stays red) */
+.cell.has-assessment:not(.empty) { outline: 2.5px solid #f97316; outline-offset: -2.5px; }
+.cell.today.has-assessment { outline-color: #dc2626; box-shadow: inset 0 0 0 5px #f97316; }
+/* Closure days: shade the whole cell so holidays scan instantly */
+.week .cell.closed:not(.empty) { background: #fde8e8; }
+.week .cell.closed.weekend:not(.empty) { background: #fbe3e3; }
+
+/* Higher-contrast greys (were #94a3b8, ~2.6:1) */
+.page-no, .wd-week { color: #64748b; }
+.weeklabel small {
+  display: block;
+  font-size: 5.6pt;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  opacity: 0.85;
+  margin-top: 0.4mm;
+}
+
+/* ---------- Key dates overview page ---------- */
+.overview-body {
+  flex: 1;
+  min-height: 0;
+  column-count: 4;
+  column-gap: 6mm;
+  font-size: 10.6pt;
+  color: #1e293b;
+}
+.ov-month { break-inside: avoid; margin-bottom: 2.6mm; }
+.ov-month h4 {
+  margin: 0 0 1.2mm;
+  font-size: 12pt;
+  font-weight: 800;
+  color: #0f172a;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 0.5mm;
+}
+.ov-row { display: flex; gap: 1.6mm; padding: 0.6mm 0; align-items: flex-start; line-height: 1.25; }
+.ov-date { flex: 0 0 33mm; font-weight: 700; color: #334155; }
+.ov-dot { width: 2mm; height: 2mm; border-radius: 50%; flex: 0 0 auto; margin-top: 1mm; }
+.ov-text { flex: 1; min-width: 0; }
+.ov-intro { font-size: 10.5pt; color: #475569; margin: 0 0 2.5mm; }
+/* Print keeps the whole year on one A4 page */
+body.print-layout .overview-body { font-size: 7.7pt; }
+body.print-layout .ov-month h4 { font-size: 9pt; }
+body.print-layout .ov-date { flex-basis: 24mm; }
+body.print-layout .ov-row { padding: 0.45mm 0; }
+body.print-layout .ov-intro { font-size: 8pt; }
+
+/* ---------- Mobile agenda (rendered from the same data) ---------- */
+.agenda { display: none; }
+
+@media screen {
+  html { scroll-snap-type: y proximity; }
+  .page-viewport { scroll-snap-align: start; }
+  .page-no { display: none; }
+  /* Month pages are locked to the window height (set by JS); every day is the same size */
+  .page-viewport.overview .page { height: auto; }
+
+  .cell:not(.empty):focus-visible { outline: 2.5px solid #2563eb; outline-offset: -2.5px; }
+  .cell.today.closed { outline-color: #dc2626; }
+  .month-nav button:focus-visible, .day-modal button:focus-visible, .dm-swatch:focus-visible {
+    outline: 2.5px solid #93c5fd; outline-offset: 2px;
+  }
+  .month-nav .util-btn { background: #334155; font-size: 8.5pt; padding: 7px 4px; }
+  .month-nav .util-btn:hover { background: #475569; }
+  .month-nav .keydates-btn { background: transparent; color: #cbd5e1; }
+  .month-nav .keydates-btn.active { background: #3b82f6; color: #fff; }
+
+  .day-modal .dm-item .dm-edit { color: #64748b; font-size: 9pt; padding: 0 3px; }
+  .day-modal .dm-item:hover .dm-edit { color: #1e293b; }
+  .dm-sub { color: #64748b; }
+  .dm-swatch { width: 22px; height: 22px; }
+  .dm-types { gap: 6px; }
+  .dm-cat-name { font-size: 8.5pt; color: #475569; margin: 0; }
+  .dm-time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .dm-time-row label { display: flex; flex-direction: column; gap: 4px; font-size: 8pt; font-weight: 700; color: #475569; }
+  .dur-fields { display: flex; align-items: center; gap: 6px; }
+  .dur-fields select, .dur-fields input[type=number] { font: inherit; font-size: 10pt; padding: 7px 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; min-width: 0; }
+  .dur-fields select { flex: 1 1 90px; width: auto; min-width: 88px; }
+  .dur-fields input[type=number] { flex: 0 0 78px; width: 78px; padding-left: 8px; padding-right: 4px; }
+  .dur-unit { font-size: 9pt; font-weight: 600; color: #475569; }
+  .dm-time-row input[type=time] { font: inherit; font-size: 10pt; padding: 7px 9px; border: 1px solid #cbd5e1; border-radius: 6px; width: 100%; box-sizing: border-box; }
+  .dm-cat-name b { color: #1e293b; }
+  /* ---- Assessment board ---- */
+  .assess-modal { width: min(1180px, 96vw); }
+  .assess-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .assess-head h3 { margin: 0 0 3px; }
+  .assess-head .dm-sub { margin: 0; }
+  .assess-tabs { display: flex; background: #f1f5f9; border-radius: 8px; padding: 3px; gap: 2px; flex: 0 0 auto; }
+  .assess-tab { font: inherit; font-size: 9pt; font-weight: 700; border: none; background: transparent; color: #475569; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+  .assess-tab.active { background: #1e293b; color: #fff; }
+  .assess-tab:hover:not(.active) { background: #e2e8f0; }
+  .assess-board { display: grid; gap: 12px; margin-bottom: 12px; max-height: 56vh; overflow-y: auto; padding: 2px; }
+  .assess-col { background: #fff; border: 1px solid #e2e8f0; border-top: 4px solid #1e293b; border-radius: 8px; overflow: hidden; min-width: 0; display: flex; flex-direction: column; }
+  .assess-col-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; padding: 10px 10px 4px; background: #fff; color: #0f172a; }
+  .assess-col-title { display: flex; align-items: center; gap: 7px; min-width: 0; }
+  .assess-col-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+  .assess-col-name { font-size: 10pt; font-weight: 800; line-height: 1.2; text-align: left; }
+  .assess-col-tools { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+  .assess-col-sem { font-size: 7.5pt; font-weight: 700; color: #475569; background: #f1f5f9; border-radius: 10px; padding: 2px 7px; white-space: nowrap; }
+  .assess-col-toggle { width: 22px; height: 22px; border-radius: 50%; border: none; background: #f1f5f9; color: #475569; font: inherit; font-size: 12pt; line-height: 1; cursor: pointer; opacity: 1; padding: 0; }
+  .assess-col-toggle:hover { background: #e2e8f0; color: #0f172a; }
+  .assess-col-meta { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 0 10px 6px; font-size: 8pt; color: #64748b; }
+  .assess-col-total { font-weight: 800; border-radius: 10px; padding: 1px 7px; white-space: nowrap; }
+  .assess-col-total.ok { color: #15803d; background: #dcfce7; }
+  .assess-col-total.under { color: #b45309; background: #fef3c7; }
+  .assess-col-total.over { color: #b91c1c; background: #fee2e2; }
+  .assess-col-total.none { color: #64748b; background: #f1f5f9; }
+  .assess-col-status { font-size: 8pt; font-weight: 700; padding: 0 10px 8px; }
+  .assess-col-status.ok { color: #15803d; }
+  .assess-col-status.under { color: #b45309; }
+  .assess-col-status.over { color: #b91c1c; }
+  .assess-col-status.none { color: #64748b; font-weight: 600; }
+  .assess-col-bar { height: 4px; background: #f1f5f9; margin: 0 10px 8px; border-radius: 2px; overflow: hidden; }
+  .assess-col-fill { height: 100%; border-radius: 2px; }
+  .assess-col-body { padding: 4px 8px 10px; display: flex; flex-direction: column; gap: 6px; background: #f8fafc; flex: 1; }
+  .assess-col-empty { font-size: 8.5pt; color: #64748b; font-style: italic; text-align: center; padding: 14px 6px; }
+  .assess-board-empty { grid-column: 1 / -1; font-size: 9.5pt; color: #64748b; text-align: center; padding: 34px 10px; background: #f8fafc; border-radius: 8px; line-height: 1.5; }
+  .assess-board-empty-title { font-size: 11pt; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+  .assess-card { position: relative; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 7px 26px 8px 9px; cursor: pointer; }
+  .assess-card:hover, .assess-card:focus-visible { border-color: #94a3b8; box-shadow: 0 1px 4px rgba(15,23,42,0.08); }
+  .assess-card-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 3px; }
+  .assess-card-date { font-size: 8pt; font-weight: 800; color: #0f172a; margin: 0; }
+  .assess-card-time { font-size: 7.5pt; font-weight: 700; color: #334155; background: #f1f5f9; border-radius: 10px; padding: 1px 6px; }
+  .assess-card-week { font-size: 7.3pt; font-weight: 700; color: #1e3a8a; background: #dbeafe; border-radius: 10px; padding: 1px 6px; }
+  .assess-card-weight { margin: 0; margin-left: auto; font-size: 7.5pt; font-weight: 800; background: #1e293b; color: #fff; border-radius: 10px; padding: 1px 7px; }
+  .assess-card-text { font-size: 9pt; font-weight: 600; color: #1e293b; line-height: 1.3; }
+  .assess-card-del { position: absolute; top: 5px; right: 5px; width: 18px; height: 18px; border: none; border-radius: 50%; background: transparent; color: #94a3b8; font: inherit; font-size: 11pt; line-height: 1; padding: 0; cursor: pointer; }
+  .assess-card-del:hover { color: #dc2626; background: #fee2e2; }
+  .assess-add { border-top: 1px solid #e2e8f0; padding-top: 12px; }
+  .assess-add-grid { display: grid; grid-template-columns: 150px 1fr 100px 130px 230px; gap: 10px; margin-bottom: 10px; }
+  .assess-add-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 8pt; font-weight: 700; color: #475569; min-width: 0; }
+  .assess-add-grid label.wide { grid-column: 1 / -1; }
+  .assess-add-grid input, .assess-add-grid select { width: 100%; }
+  .assess-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .assess-footer .dm-spacer { flex: 1; }
+  .assess-footer .assess-note { font-size: 8.5pt; color: #64748b; }
+  .dm-ghost { background: #f1f5f9 !important; color: #1e293b !important; font-weight: 700; }
+  .dm-ghost:hover { background: #e2e8f0 !important; }
+
+  /* Settings modal */
+  .settings-modal { width: min(560px, 96vw); }
+  .st-section { border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 10px; }
+  .st-section h4 { margin: 0 0 6px; font-size: 10pt; color: #0f172a; }
+  .st-note { margin: 6px 0 0; font-size: 8.5pt; color: #64748b; }
+  .st-note.ok { color: #15803d; }
+  .st-note.err { color: #b91c1c; }
+  .st-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .st-actions button, .module-add button, .module-row button {
+    font: inherit; font-size: 9pt; font-weight: 700; cursor: pointer;
+    border: none; border-radius: 6px; padding: 7px 12px; background: #e2e8f0; color: #1e293b;
+  }
+  .st-actions button:hover { background: #cbd5e1; }
+  .module-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+  .module-row { display: flex; align-items: center; gap: 8px; }
+  .module-row .mod-color {
+    width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; padding: 0;
+    box-shadow: 0 0 0 1px rgba(15,23,42,0.2); flex: 0 0 auto;
+  }
+  .module-row input[type=text] { flex: 1; font: inherit; font-size: 9.5pt; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 6px; min-width: 0; }
+  .module-row .mod-count { font-size: 8pt; color: #64748b; white-space: nowrap; }
+  .module-row .mod-sem { width: auto; flex: 0 0 auto; font: inherit; font-size: 8.5pt; padding: 5px 6px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; }
+  .module-row input[type=text] { flex: 1 1 120px; }
+  .module-row .mod-del { padding: 4px 8px; }
+  .module-row .mod-del:disabled { opacity: 0.4; cursor: not-allowed; }
+  .module-add { display: flex; gap: 8px; border: none; padding: 0; margin: 0; }
+  .module-add input { flex: 1; font: inherit; font-size: 9.5pt; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; min-width: 0; }
+  .module-add button { background: #1e293b; color: #fff; }
+
+  .confirm-modal { width: min(420px, 96vw); }
+  .confirm-modal h3 { margin: 0 0 8px; font-size: 12.5pt; }
+  .confirm-text { margin: 0 0 16px; font-size: 9.5pt; color: #334155; line-height: 1.45; }
+  .day-modal .dm-danger { background: #dc2626; color: #fff; font-weight: 700; }
+  .day-modal .dm-danger:hover { background: #b91c1c; }
+
+  /* Toast with undo */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    background: #0f172a;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 9.5pt;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    z-index: 200;
+    max-width: 92vw;
+  }
+  .toast[hidden] { display: none; }
+  .toast button {
+    font: inherit; font-size: 9.5pt; font-weight: 700; cursor: pointer;
+    border: none; border-radius: 5px; padding: 5px 10px; background: #3b82f6; color: #fff;
+  }
+
+  .agenda-day { padding: 8px 0; border-bottom: 1px solid #e2e8f0; cursor: pointer; }
+  .agenda-day:hover { background: #f8fafc; }
+  .agenda-date { font-weight: 800; font-size: 10pt; color: #0f172a; margin-bottom: 4px; }
+  .agenda-date small { font-weight: 600; color: #64748b; margin-left: 6px; }
+  .agenda-week { font-size: 8pt; font-weight: 700; color: #1e3a8a; background: #bfdbfe; border-radius: 10px; padding: 1px 7px; margin-left: 6px; }
+  .agenda .chip { font-size: 10pt; margin-bottom: 4px; }
+  .agenda-empty { color: #64748b; font-style: italic; padding: 10px 0; }
+  .agenda h2 { margin: 6px 0 4px; font-size: 16pt; }
+  .agenda h2 small { font-size: 10pt; color: #64748b; font-weight: 600; }
+
+  /* Compact sidebar so every control is visible on a 700px-high window */
+  .month-nav { padding: 6px 0; }
+  .month-nav button[data-target] { padding: 6px 6px; }
+  .month-nav .assess-nav-btn { padding: 6px 4px; margin-bottom: 6px; }
+  .month-nav-title { padding-bottom: 6px; margin-bottom: 6px; }
+  .month-nav-divider { margin-bottom: 6px; }
+
+  @media (max-width: 700px) {
+    .month-nav { position: sticky; top: 0; z-index: 20; padding: 4px 0; }
+    .page-viewport { scroll-margin-top: 58px; }
+    .assess-add-grid { grid-template-columns: 1fr 1fr; }
+    .dm-time-row { grid-template-columns: 1fr; }
+    .page-viewport .page { display: none; }
+    .agenda { display: block; padding: 8px 12px 20px; }
+    .page-viewport.overview .page { display: none; }
+    .page-viewport.overview .agenda { display: block; }
+    .toast { bottom: 12px; }
+  }
+}
+
+/* ---------- Printable assessment schedule (only shown in print-mode-assessments) ---------- */
+.assess-print { display: none; }
+body.print-mode-assessments .assess-print {
+  display: block !important;
+  font-family: "Segoe UI", "Calibri", Arial, sans-serif;
+  color: #1e293b;
+  padding: 10mm 12mm;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.ap-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2.5px solid #1e293b; padding-bottom: 3mm; margin-bottom: 4mm; }
+.ap-header h1 { margin: 0; font-size: 20pt; font-weight: 800; color: #0f172a; line-height: 1.05; }
+.ap-sub { font-size: 10pt; font-weight: 600; color: #64748b; margin-top: 1mm; }
+.ap-meta { font-size: 8pt; color: #64748b; }
+.ap-summary { display: flex; flex-wrap: wrap; gap: 3mm 6mm; margin-bottom: 5mm; }
+.ap-chip { display: flex; align-items: center; gap: 2mm; }
+.ap-dot { width: 3mm; height: 3mm; border-radius: 50%; flex: 0 0 auto; display: inline-block; vertical-align: middle; margin-right: 1.5mm; }
+.ap-chip-name { font-size: 9pt; font-weight: 800; }
+.ap-chip-sub { font-size: 7.5pt; color: #64748b; }
+.ap-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8mm; align-items: start; }
+.ap-module { break-inside: avoid; page-break-inside: avoid; border-left: 1.2mm solid #1e293b; border-radius: 1.5mm; margin-bottom: 5mm; overflow: hidden; background: #fff; box-shadow: 0 0 0 0.3mm #e2e8f0; }
+.ap-chrono { border-left-color: #1e293b; margin-top: 2mm; break-inside: auto; page-break-inside: auto; }
+.ap-table tr { break-inside: avoid; page-break-inside: avoid; }
+.ap-table thead { display: table-header-group; }
+.ap-chrono .ap-module-head { background: #f1f5f9; }
+.ap-module-head { display: flex; justify-content: space-between; align-items: center; gap: 3mm; padding: 2mm 3mm; }
+.ap-module-head h2 { margin: 0; font-size: 11pt; font-weight: 800; color: #0f172a; }
+.ap-module-right { display: flex; gap: 2mm; align-items: center; }
+.ap-module-sem { font-size: 7.5pt; font-weight: 700; color: #475569; background: #fff; border: 0.3mm solid #cbd5e1; border-radius: 10mm; padding: 0.5mm 2mm; }
+.ap-module-total { font-size: 8pt; font-weight: 800; color: #fff; background: #1e293b; border-radius: 10mm; padding: 0.6mm 2.5mm; }
+.ap-module-total.over { background: #b91c1c; }
+.ap-module-total.under { background: #b45309; }
+.ap-module-total.none { background: #94a3b8; }
+.ap-table tfoot td { border-top: 0.3mm solid #cbd5e1; border-bottom: none; font-weight: 700; background: #fff !important; }
+.ap-table .ap-missing-row td { font-weight: 800; border-top: none; padding-top: 0.6mm; }
+.ap-table .ap-missing-row.under td { color: #b45309; }
+.ap-table .ap-missing-row.over td { color: #b91c1c; }
+.ap-none { margin: 0; padding: 3mm; font-size: 8.5pt; color: #64748b; font-style: italic; }
+.ap-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+.ap-table th { text-align: left; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.4px; color: #64748b; font-weight: 700; padding: 1.6mm 3mm; border-bottom: 0.3mm solid #cbd5e1; }
+.ap-table td { padding: 1.8mm 3mm; border-bottom: 0.2mm solid #e2e8f0; vertical-align: top; line-height: 1.3; }
+.ap-table tbody tr:nth-child(even) td { background: #f8fafc; }
+.ap-table tbody tr:last-child td { border-bottom: none; }
+.ap-table .num { text-align: right; white-space: nowrap; font-weight: 700; }
+.ap-table .ap-date { white-space: nowrap; font-weight: 700; color: #334155; width: 28mm; }
+.ap-table .ap-week { white-space: nowrap; color: #64748b; width: 18mm; }
+.ap-table .ap-time { white-space: nowrap; color: #334155; width: 30mm; }
+.ap-modcell { white-space: nowrap; }
+.ap-empty { font-size: 10pt; color: #64748b; }
+
+@media print {
+  .agenda, .toast, #settingsModal, #confirmModal { display: none !important; }
+  body.print-mode-assessments #assessModal, body.print-mode-assessments #dayModal { display: none !important; }
+  body.print-mode-assessments .assess-print { padding: 4mm 6mm; }
+  .chip-span { box-shadow: none; }
+  body.print-mode-assessments .assess-card-edit { display: none !important; }
+  body.print-mode-assessments .assess-col-total { border: 1px solid #fff; }
+}
+
+</style>
+</head>
+<body>
+
+<nav class="month-nav" id="monthNav">
+  <div class="month-nav-title">2026–27</div>
+  <button type="button" class="util-btn" id="todayBtn" title="Jump to today">Today</button>
+  <button type="button" class="assess-nav-btn" id="assessNavBtn">
+    <span class="assess-nav-label">Assessments</span>
+    <span class="assess-nav-dots" id="assessNavDots"></span>
+  </button>
+  <div class="month-nav-divider"></div>
+  <button type="button" data-target="0">Sep</button>
+  <button type="button" data-target="1">Oct</button>
+  <button type="button" data-target="2">Nov</button>
+  <button type="button" data-target="3">Dec</button>
+  <button type="button" data-target="4">Jan</button>
+  <button type="button" data-target="5">Feb</button>
+  <button type="button" data-target="6">Mar</button>
+  <button type="button" data-target="7">Apr</button>
+  <button type="button" data-target="8">May</button>
+  <button type="button" data-target="9">Jun</button>
+  <button type="button" data-target="10">Jul</button>
+  <button type="button" data-target="11">Aug</button>
+  <div class="month-nav-divider"></div>
+  <button type="button" class="keydates-btn" id="keydatesBtn" title="All official dates on one page">Key dates</button>
+  <div class="month-nav-divider"></div>
+  <button type="button" class="print-cal-btn" id="printCalBtn">🖨 Print calendar</button>
+  <button type="button" class="util-btn" id="settingsBtn" title="Modules, backup and restore">⚙ Settings</button>
+</nav>
+
+<main class="calendar-main" id="calendarMain">
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">September</div>
+      <div class="month-year">2026</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 1 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(5,1fr);">
+    <div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell empty"></div><div class="cell"><div class="daynum">1</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>Academic Year Starts</div><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Repeat Practicals</div></div></div><div class="cell"><div class="daynum">2</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Repeat Practicals</div><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Close of Application – Deferral (Repeat Exam Session)</div><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Close of Application – Impaired Performance (Repeat Exam Session)</div></div></div><div class="cell"><div class="daynum">3</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Faculty Self Service / Gradebook Close (5pm)</div></div></div><div class="cell"><div class="daynum">4</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">5</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">6</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">7</div><div class="chips"><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes</div></div></div><div class="cell"><div class="daynum">8</div><div class="chips"><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes</div><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Exam Boards</div></div></div><div class="cell"><div class="daynum">9</div><div class="chips"><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes</div><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Exam Boards</div></div></div><div class="cell"><div class="daynum">10</div><div class="chips"><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes</div><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – CAO / Full-time Students</div></div></div><div class="cell"><div class="daynum">11</div><div class="chips"><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes</div><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – CAO / Full-time Students</div></div></div><div class="cell weekend"><div class="daynum">12</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">13</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">1</div><div class="cell"><div class="daynum">14</div><div class="chips"><div class="chip chip-results"><span class="chipdot" style="background:#06b6d4"></span>Results Released to Students (am) + Consultation</div></div></div><div class="cell"><div class="daynum">15</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>Start of Teaching – Full-time / CAO / OFPD (excl. Craft Apprentices)</div><div class="chip chip-results"><span class="chipdot" style="background:#06b6d4"></span>Consultation Day</div></div></div><div class="cell"><div class="daynum">16</div><div class="chips"></div></div><div class="cell"><div class="daynum">17</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Review/Appeal Application – Autumn Results Closes</div></div></div><div class="cell"><div class="daynum">18</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">19</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">20</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">2</div><div class="cell"><div class="daynum">21</div><div class="chips"></div></div><div class="cell"><div class="daynum">22</div><div class="chips"></div></div><div class="cell"><div class="daynum">23</div><div class="chips"></div></div><div class="cell"><div class="daynum">24</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Last Exam Board – Taught Major Awards &amp; Non-Major Awards: Donegal, Sligo, St Angela&#x27;s</div></div></div><div class="cell"><div class="daynum">25</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">26</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">27</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">3</div><div class="cell"><div class="daynum">28</div><div class="chips"></div></div><div class="cell"><div class="daynum">29</div><div class="chips"></div></div><div class="cell"><div class="daynum">30</div><div class="chips"></div></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">October</div>
+      <div class="month-year">2026</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 2 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(5,1fr);">
+    <div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">3</div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell"><div class="daynum">1</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Final Research Degree Exam Board – DL, SL &amp; SA; Final Board Nursing (DL, SA)</div></div></div><div class="cell"><div class="daynum">2</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">3</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">4</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">4</div><div class="cell"><div class="daynum">5</div><div class="chips"></div></div><div class="cell"><div class="daynum">6</div><div class="chips"></div></div><div class="cell"><div class="daynum">7</div><div class="chips"></div></div><div class="cell"><div class="daynum">8</div><div class="chips"></div></div><div class="cell"><div class="daynum">9</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">10</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">11</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">5</div><div class="cell"><div class="daynum">12</div><div class="chips"></div></div><div class="cell"><div class="daynum">13</div><div class="chips"></div></div><div class="cell"><div class="daynum">14</div><div class="chips"></div></div><div class="cell"><div class="daynum">15</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Final Research Degree Exam Board – Galway Mayo</div></div></div><div class="cell"><div class="daynum">16</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">17</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">18</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">6</div><div class="cell"><div class="daynum">19</div><div class="chips"></div></div><div class="cell"><div class="daynum">20</div><div class="chips"></div></div><div class="cell"><div class="daynum">21</div><div class="chips"></div></div><div class="cell"><div class="daynum">22</div><div class="chips"></div></div><div class="cell"><div class="daynum">23</div><div class="chips"><div class="chip chip-council"><span class="chipdot" style="background:#f97316"></span>Academic Council</div></div></div><div class="cell weekend"><div class="daynum">24</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">25</div><div class="chips"></div></div></div><div class="week reading" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel reading text">Reading Week</div><div class="cell"><div class="daynum">26</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>Public Holiday – University Closed</div></div></div><div class="cell"><div class="daynum">27</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>Reading Week (all students, excl. Craft Apprentices)</div><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Donegal</div></div></div><div class="cell"><div class="daynum">28</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>Reading Week (all students, excl. Craft Apprentices)</div><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Donegal</div></div></div><div class="cell"><div class="daynum">29</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>Reading Week (all students, excl. Craft Apprentices)</div><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Sligo &amp; St Angela&#x27;s</div></div></div><div class="cell"><div class="daynum">30</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>Reading Week (all students, excl. Craft Apprentices)</div><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Sligo &amp; St Angela&#x27;s</div></div></div><div class="cell weekend"><div class="daynum">31</div><div class="chips"></div></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">November</div>
+      <div class="month-year">2026</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 3 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(6,1fr);">
+    <div class="week reading" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel reading text">Reading Week</div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell weekend"><div class="daynum">1</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">7</div><div class="cell"><div class="daynum">2</div><div class="chips"></div></div><div class="cell"><div class="daynum">3</div><div class="chips"></div></div><div class="cell"><div class="daynum">4</div><div class="chips"></div></div><div class="cell"><div class="daynum">5</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Terminal Exam Paper (+repeats) Submission to GURU – Winter Exams</div></div></div><div class="cell"><div class="daynum">6</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">7</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">8</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">8</div><div class="cell"><div class="daynum">9</div><div class="chips"></div></div><div class="cell"><div class="daynum">10</div><div class="chips"></div></div><div class="cell"><div class="daynum">11</div><div class="chips"></div></div><div class="cell"><div class="daynum">12</div><div class="chips"><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Mayo</div></div></div><div class="cell"><div class="daynum">13</div><div class="chips"><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Connemara</div></div></div><div class="cell weekend"><div class="daynum">14</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">15</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">9</div><div class="cell"><div class="daynum">16</div><div class="chips"></div></div><div class="cell"><div class="daynum">17</div><div class="chips"><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Galway</div></div></div><div class="cell"><div class="daynum">18</div><div class="chips"><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Galway</div></div></div><div class="cell"><div class="daynum">19</div><div class="chips"></div></div><div class="cell"><div class="daynum">20</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">21</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">22</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">10</div><div class="cell"><div class="daynum">23</div><div class="chips"></div></div><div class="cell"><div class="daynum">24</div><div class="chips"></div></div><div class="cell"><div class="daynum">25</div><div class="chips"></div></div><div class="cell"><div class="daynum">26</div><div class="chips"></div></div><div class="cell"><div class="daynum">27</div><div class="chips"><div class="chip chip-council"><span class="chipdot" style="background:#f97316"></span>Academic Council</div></div></div><div class="cell weekend"><div class="daynum">28</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">29</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">11</div><div class="cell"><div class="daynum">30</div><div class="chips"></div></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">December</div>
+      <div class="month-year">2026</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 4 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(5,1fr);">
+    <div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">11</div><div class="cell empty"></div><div class="cell"><div class="daynum">1</div><div class="chips"></div></div><div class="cell"><div class="daynum">2</div><div class="chips"></div></div><div class="cell"><div class="daynum">3</div><div class="chips"></div></div><div class="cell"><div class="daynum">4</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">5</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">6</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">12</div><div class="cell"><div class="daynum">7</div><div class="chips"></div></div><div class="cell"><div class="daynum">8</div><div class="chips"></div></div><div class="cell"><div class="daynum">9</div><div class="chips"></div></div><div class="cell"><div class="daynum">10</div><div class="chips"></div></div><div class="cell"><div class="daynum">11</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">12</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">13</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">13</div><div class="cell"><div class="daynum">14</div><div class="chips"></div></div><div class="cell"><div class="daynum">15</div><div class="chips"></div></div><div class="cell"><div class="daynum">16</div><div class="chips"></div></div><div class="cell"><div class="daynum">17</div><div class="chips"></div></div><div class="cell"><div class="daynum">18</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>End of Semester 1 Teaching</div></div></div><div class="cell weekend"><div class="daynum">19</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">20</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">21</div><div class="chips"></div></div><div class="cell"><div class="daynum">22</div><div class="chips"></div></div><div class="cell"><div class="daynum">23</div><div class="chips"></div></div><div class="cell"><div class="daynum">24</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div><div class="cell"><div class="daynum">25</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div><div class="cell weekend"><div class="daynum">26</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div><div class="cell weekend"><div class="daynum">27</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">28</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div><div class="cell"><div class="daynum">29</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div><div class="cell"><div class="daynum">30</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div><div class="cell"><div class="daynum">31</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">January</div>
+      <div class="month-year">2027</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 5 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(5,1fr);">
+    <div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell"><div class="daynum">1</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>University Closed – Christmas</div></div></div><div class="cell weekend"><div class="daynum">2</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">3</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">4</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>University Open</div></div></div><div class="cell"><div class="daynum">5</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div></div></div><div class="cell"><div class="daynum">6</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div></div></div><div class="cell"><div class="daynum">7</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div></div></div><div class="cell"><div class="daynum">8</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div></div></div><div class="cell weekend"><div class="daynum">9</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div></div></div><div class="cell weekend"><div class="daynum">10</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">11</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div></div></div><div class="cell"><div class="daynum">12</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes (January)</div></div></div><div class="cell"><div class="daynum">13</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes (January)</div></div></div><div class="cell"><div class="daynum">14</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes (January)</div></div></div><div class="cell"><div class="daynum">15</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div><div class="chip chip-other"><span class="chipdot" style="background:#64748b"></span>Induction – OFPD Programmes (January)</div></div></div><div class="cell weekend"><div class="daynum">16</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exams</div></div></div><div class="cell weekend"><div class="daynum">17</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">1</div><div class="cell"><div class="daynum">18</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>Teaching Start – Full-time, Part-time &amp; Online Students</div><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Winter Exam (Contingency Day)</div></div></div><div class="cell"><div class="daynum">19</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Deferral Applications – Winter Session Close</div><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Impaired Performance Applications – Winter Session Close</div></div></div><div class="cell"><div class="daynum">20</div><div class="chips"></div></div><div class="cell"><div class="daynum">21</div><div class="chips"></div></div><div class="cell"><div class="daynum">22</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">23</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">24</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">2</div><div class="cell"><div class="daynum">25</div><div class="chips"></div></div><div class="cell"><div class="daynum">26</div><div class="chips"></div></div><div class="cell"><div class="daynum">27</div><div class="chips"></div></div><div class="cell"><div class="daynum">28</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Faculty Self Service / Gradebook Close (5pm) – Roll to History Starts</div></div></div><div class="cell"><div class="daynum">29</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">30</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">31</div><div class="chips"></div></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">February</div>
+      <div class="month-year">2027</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 6 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(4,1fr);">
+    <div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">3</div><div class="cell"><div class="daynum">1</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>Public Holiday – University Closed</div></div></div><div class="cell"><div class="daynum">2</div><div class="chips"></div></div><div class="cell"><div class="daynum">3</div><div class="chips"></div></div><div class="cell"><div class="daynum">4</div><div class="chips"></div></div><div class="cell"><div class="daynum">5</div><div class="chips"><div class="chip chip-council"><span class="chipdot" style="background:#f97316"></span>Academic Council</div></div></div><div class="cell weekend"><div class="daynum">6</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">7</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">4</div><div class="cell"><div class="daynum">8</div><div class="chips"></div></div><div class="cell"><div class="daynum">9</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Exam Boards – Students Completing Awards Only</div></div></div><div class="cell"><div class="daynum">10</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Exam Boards – Students Completing Awards Only</div></div></div><div class="cell"><div class="daynum">11</div><div class="chips"></div></div><div class="cell"><div class="daynum">12</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">13</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">14</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">5</div><div class="cell"><div class="daynum">15</div><div class="chips"><div class="chip chip-results"><span class="chipdot" style="background:#06b6d4"></span>Results Release – Staggered (am) + Consultation Day (pm)</div></div></div><div class="cell"><div class="daynum">16</div><div class="chips"><div class="chip chip-results"><span class="chipdot" style="background:#06b6d4"></span>Consultation Day – Winter Results</div></div></div><div class="cell"><div class="daynum">17</div><div class="chips"></div></div><div class="cell"><div class="daynum">18</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Close of Application – Review/Appeal of Final Results</div></div></div><div class="cell"><div class="daynum">19</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">20</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">21</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">6</div><div class="cell"><div class="daynum">22</div><div class="chips"></div></div><div class="cell"><div class="daynum">23</div><div class="chips"></div></div><div class="cell"><div class="daynum">24</div><div class="chips"></div></div><div class="cell"><div class="daynum">25</div><div class="chips"></div></div><div class="cell"><div class="daynum">26</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Final Exam Board – Taught Major Awards (Spring Conferring) &amp; Completing Non-Major Awards</div></div></div><div class="cell weekend"><div class="daynum">27</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">28</div><div class="chips"></div></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">March</div>
+      <div class="month-year">2027</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 7 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(5,1fr);">
+    <div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">7</div><div class="cell"><div class="daynum">1</div><div class="chips"></div></div><div class="cell"><div class="daynum">2</div><div class="chips"></div></div><div class="cell"><div class="daynum">3</div><div class="chips"></div></div><div class="cell"><div class="daynum">4</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Terminal Exam Paper – Summer &amp; Year-long Modules Submission to GURU (+repeats)</div></div></div><div class="cell"><div class="daynum">5</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">6</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">7</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">8</div><div class="cell"><div class="daynum">8</div><div class="chips"></div></div><div class="cell"><div class="daynum">9</div><div class="chips"></div></div><div class="cell"><div class="daynum">10</div><div class="chips"></div></div><div class="cell"><div class="daynum">11</div><div class="chips"></div></div><div class="cell"><div class="daynum">12</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">13</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">14</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">9</div><div class="cell"><div class="daynum">15</div><div class="chips"></div></div><div class="cell"><div class="daynum">16</div><div class="chips"></div></div><div class="cell"><div class="daynum">17</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>Public Holiday – University Closed (St Patrick&#x27;s Day)</div></div></div><div class="cell"><div class="daynum">18</div><div class="chips"></div></div><div class="cell"><div class="daynum">19</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">20</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">21</div><div class="chips"></div></div></div><div class="week easter" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel easter text">Easter</div><div class="cell"><div class="daynum">22</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell"><div class="daynum">23</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell"><div class="daynum">24</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell"><div class="daynum">25</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell"><div class="daynum">26</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>Good Friday – University Closed</div></div></div><div class="cell weekend"><div class="daynum">27</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell weekend"><div class="daynum">28</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div></div><div class="week easter" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel easter text">Easter</div><div class="cell"><div class="daynum">29</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>Public Holiday – University Closed</div></div></div><div class="cell"><div class="daynum">30</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell"><div class="daynum">31</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">April</div>
+      <div class="month-year">2027</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 8 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(5,1fr);">
+    <div class="week easter" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel easter text">Easter</div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell"><div class="daynum">1</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell"><div class="daynum">2</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>No Teaching – Easter Break</div></div></div><div class="cell weekend"><div class="daynum">3</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">4</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">10</div><div class="cell"><div class="daynum">5</div><div class="chips"></div></div><div class="cell"><div class="daynum">6</div><div class="chips"></div></div><div class="cell"><div class="daynum">7</div><div class="chips"></div></div><div class="cell"><div class="daynum">8</div><div class="chips"></div></div><div class="cell"><div class="daynum">9</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">10</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">11</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">11</div><div class="cell"><div class="daynum">12</div><div class="chips"></div></div><div class="cell"><div class="daynum">13</div><div class="chips"></div></div><div class="cell"><div class="daynum">14</div><div class="chips"></div></div><div class="cell"><div class="daynum">15</div><div class="chips"></div></div><div class="cell"><div class="daynum">16</div><div class="chips"><div class="chip chip-council"><span class="chipdot" style="background:#f97316"></span>Academic Council</div></div></div><div class="cell weekend"><div class="daynum">17</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">18</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">12</div><div class="cell"><div class="daynum">19</div><div class="chips"></div></div><div class="cell"><div class="daynum">20</div><div class="chips"></div></div><div class="cell"><div class="daynum">21</div><div class="chips"></div></div><div class="cell"><div class="daynum">22</div><div class="chips"></div></div><div class="cell"><div class="daynum">23</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">24</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">25</div><div class="chips"></div></div></div><div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">13</div><div class="cell"><div class="daynum">26</div><div class="chips"></div></div><div class="cell"><div class="daynum">27</div><div class="chips"><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Galway</div></div></div><div class="cell"><div class="daynum">28</div><div class="chips"><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Sligo</div></div></div><div class="cell"><div class="daynum">29</div><div class="chips"><div class="chip chip-confer"><span class="chipdot" style="background:#22c55e"></span>Conferring – Donegal</div></div></div><div class="cell"><div class="daynum">30</div><div class="chips"><div class="chip chip-teach"><span class="chipdot" style="background:#3b82f6"></span>End of Semester Teaching</div></div></div><div class="cell empty weekend"></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">May</div>
+      <div class="month-year">2027</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 9 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(6,1fr);">
+    <div class="week academic" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel academic">13</div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell weekend"><div class="daynum">1</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">2</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">3</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>Public Holiday – University Closed</div></div></div><div class="cell"><div class="daynum">4</div><div class="chips"></div></div><div class="cell"><div class="daynum">5</div><div class="chips"></div></div><div class="cell"><div class="daynum">6</div><div class="chips"></div></div><div class="cell"><div class="daynum">7</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">8</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">9</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">10</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session Begins (all students; Sligo OFPD students run 17th–22nd)</div></div></div><div class="cell"><div class="daynum">11</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell"><div class="daynum">12</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell"><div class="daynum">13</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell"><div class="daynum">14</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell weekend"><div class="daynum">15</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell weekend"><div class="daynum">16</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">17</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell"><div class="daynum">18</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell"><div class="daynum">19</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell"><div class="daynum">20</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell"><div class="daynum">21</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell weekend"><div class="daynum">22</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Summer Exam Session</div></div></div><div class="cell weekend"><div class="daynum">23</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">24</div><div class="chips"></div></div><div class="cell"><div class="daynum">25</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Close of Deferral &amp; Impaired Performance Applications – Summer Exam Session</div></div></div><div class="cell"><div class="daynum">26</div><div class="chips"></div></div><div class="cell"><div class="daynum">27</div><div class="chips"></div></div><div class="cell"><div class="daynum">28</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Faculty Self Service / Gradebook Close (5pm)</div></div></div><div class="cell weekend"><div class="daynum">29</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">30</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">31</div><div class="chips"></div></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">June</div>
+      <div class="month-year">2027</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 10 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(5,1fr);">
+    <div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell empty"></div><div class="cell"><div class="daynum">1</div><div class="chips"></div></div><div class="cell"><div class="daynum">2</div><div class="chips"></div></div><div class="cell"><div class="daynum">3</div><div class="chips"></div></div><div class="cell"><div class="daynum">4</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Exam Boards</div></div></div><div class="cell weekend"><div class="daynum">5</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">6</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">7</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>Public Holiday – University Closed</div></div></div><div class="cell"><div class="daynum">8</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Exam Boards</div></div></div><div class="cell"><div class="daynum">9</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Exam Boards</div></div></div><div class="cell"><div class="daynum">10</div><div class="chips"></div></div><div class="cell"><div class="daynum">11</div><div class="chips"><div class="chip chip-council"><span class="chipdot" style="background:#f97316"></span>Academic Council</div></div></div><div class="cell weekend"><div class="daynum">12</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">13</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">14</div><div class="chips"><div class="chip chip-results"><span class="chipdot" style="background:#06b6d4"></span>Results Released to Students (am) + Consultation Day</div></div></div><div class="cell"><div class="daynum">15</div><div class="chips"><div class="chip chip-results"><span class="chipdot" style="background:#06b6d4"></span>Consultation Day</div></div></div><div class="cell"><div class="daynum">16</div><div class="chips"></div></div><div class="cell"><div class="daynum">17</div><div class="chips"><div class="chip chip-deadline"><span class="chipdot" style="background:#eab308"></span>Review/Appeal Application Close (5pm)</div></div></div><div class="cell"><div class="daynum">18</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">19</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">20</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">21</div><div class="chips"></div></div><div class="cell"><div class="daynum">22</div><div class="chips"></div></div><div class="cell"><div class="daynum">23</div><div class="chips"></div></div><div class="cell"><div class="daynum">24</div><div class="chips"></div></div><div class="cell"><div class="daynum">25</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">26</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">27</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">28</div><div class="chips"></div></div><div class="cell"><div class="daynum">29</div><div class="chips"></div></div><div class="cell"><div class="daynum">30</div><div class="chips"></div></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">July</div>
+      <div class="month-year">2027</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 11 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(5,1fr);">
+    <div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell"><div class="daynum">1</div><div class="chips"></div></div><div class="cell"><div class="daynum">2</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">3</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">4</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">5</div><div class="chips"></div></div><div class="cell"><div class="daynum">6</div><div class="chips"></div></div><div class="cell"><div class="daynum">7</div><div class="chips"></div></div><div class="cell"><div class="daynum">8</div><div class="chips"></div></div><div class="cell"><div class="daynum">9</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">10</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">11</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">12</div><div class="chips"></div></div><div class="cell"><div class="daynum">13</div><div class="chips"></div></div><div class="cell"><div class="daynum">14</div><div class="chips"></div></div><div class="cell"><div class="daynum">15</div><div class="chips"></div></div><div class="cell"><div class="daynum">16</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">17</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">18</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">19</div><div class="chips"></div></div><div class="cell"><div class="daynum">20</div><div class="chips"></div></div><div class="cell"><div class="daynum">21</div><div class="chips"></div></div><div class="cell"><div class="daynum">22</div><div class="chips"></div></div><div class="cell"><div class="daynum">23</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">24</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">25</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">26</div><div class="chips"></div></div><div class="cell"><div class="daynum">27</div><div class="chips"></div></div><div class="cell"><div class="daynum">28</div><div class="chips"></div></div><div class="cell"><div class="daynum">29</div><div class="chips"></div></div><div class="cell"><div class="daynum">30</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">31</div><div class="chips"></div></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+<div class="page-viewport month"><section class="page">
+  <div class="page-header">
+    <div class="month-title">
+      <div class="month-name">August</div>
+      <div class="month-year">2027</div>
+    </div>
+    <div class="header-right">
+      <div class="ay-badge">Academic Year 2026–27</div>
+      <div class="page-no">Page 12 of 13</div>
+    </div>
+  </div>
+  <div class="weekday-row" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="wd wd-week">Wk</div><div class="wd">Mon</div><div class="wd">Tue</div><div class="wd">Wed</div><div class="wd">Thu</div><div class="wd">Fri</div><div class="wd">Sat</div><div class="wd">Sun</div></div>
+  <div class="grid" style="grid-template-rows:repeat(6,1fr);">
+    <div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell weekend"><div class="daynum">1</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">2</div><div class="chips"><div class="chip chip-holiday"><span class="chipdot" style="background:#ef4444"></span>Public Holiday – University Closed</div></div></div><div class="cell"><div class="daynum">3</div><div class="chips"></div></div><div class="cell"><div class="daynum">4</div><div class="chips"></div></div><div class="cell"><div class="daynum">5</div><div class="chips"></div></div><div class="cell"><div class="daynum">6</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">7</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">8</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">9</div><div class="chips"></div></div><div class="cell"><div class="daynum">10</div><div class="chips"></div></div><div class="cell"><div class="daynum">11</div><div class="chips"></div></div><div class="cell"><div class="daynum">12</div><div class="chips"></div></div><div class="cell"><div class="daynum">13</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">14</div><div class="chips"></div></div><div class="cell weekend"><div class="daynum">15</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">16</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell"><div class="daynum">17</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell"><div class="daynum">18</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell"><div class="daynum">19</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell"><div class="daynum">20</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell weekend"><div class="daynum">21</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell weekend"><div class="daynum">22</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">23</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell"><div class="daynum">24</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell"><div class="daynum">25</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell"><div class="daynum">26</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell"><div class="daynum">27</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell weekend"><div class="daynum">28</div><div class="chips"><div class="chip chip-exam"><span class="chipdot" style="background:#8b5cf6"></span>Autumn Repeat Exam Session</div></div></div><div class="cell weekend"><div class="daynum">29</div><div class="chips"></div></div></div><div class="week" style="grid-template-columns:15mm repeat(5,1fr) 0.62fr 0.62fr;"><div class="weeklabel "></div><div class="cell"><div class="daynum">30</div><div class="chips"></div></div><div class="cell"><div class="daynum">31</div><div class="chips"></div></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty"></div><div class="cell empty weekend"></div><div class="cell empty weekend"></div></div>
+  </div>
+</section></div>
+
+</main>
+
+<div class="day-modal-backdrop" id="dayModal" hidden>
+  <div class="day-modal" role="dialog" aria-modal="true" aria-labelledby="dayModalTitle">
+    <h3 id="dayModalTitle">Day</h3>
+    <p class="dm-sub">Click an event to edit it. Your changes are saved in this browser; use Settings to back them up.</p>
+    <div class="dm-list" id="dayModalList"></div>
+    <form id="dayModalForm">
+      <input type="text" id="dayModalText" placeholder="Event description" autocomplete="off" required>
+      <div class="dm-types" id="dayModalTypes">
+        <button type="button" class="dm-assess-btn" id="dayModalAssessBtn" aria-pressed="false">🎓 Assessment</button>
+        <button type="button" class="dm-swatch" data-cls="chip-teach" title="Blue"></button>
+        <button type="button" class="dm-swatch" data-cls="chip-exam" title="Purple"></button>
+        <button type="button" class="dm-swatch" data-cls="chip-confer" title="Green"></button>
+        <button type="button" class="dm-swatch" data-cls="chip-council" title="Orange"></button>
+        <button type="button" class="dm-swatch" data-cls="chip-results" title="Cyan"></button>
+        <button type="button" class="dm-swatch" data-cls="chip-deadline" title="Yellow"></button>
+        <button type="button" class="dm-swatch" data-cls="chip-holiday" title="Red"></button>
+        <button type="button" class="dm-swatch" data-cls="chip-other" title="Grey"></button>
+      </div>
+      <p class="dm-cat-name" id="dayModalCatName" aria-live="polite"></p>
+      <select id="dayModalModule" required hidden aria-label="Module"></select>
+      <input type="number" id="dayModalWeight" placeholder="Weight % (optional)" min="0" max="100" step="any" inputmode="decimal" hidden>
+      <div class="dm-time-row" id="dayModalTimeRow" hidden>
+        <label>Start time <input type="time" id="dayModalTime" step="300"></label>
+        <label>Duration <span class="dur-fields"><select id="dayModalDurH" aria-label="Hours"></select><input type="number" id="dayModalDurM" min="0" max="59" step="1" list="minuteSteps" aria-label="Minutes" inputmode="numeric"><span class="dur-unit">min</span></span></label>
+      </div>
+      <p class="dm-editing-hint" id="dayModalEditingHint" hidden>Editing this event — <a href="#" id="dayModalCancelEdit">cancel, add a new one instead</a></p>
+      <div class="dm-actions">
+        <button type="button" class="dm-close" id="dayModalCloseBtn">Close</button>
+        <button type="submit" class="dm-add" id="dayModalSubmitBtn">Add event</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="day-modal-backdrop" id="assessModal" hidden>
+  <div class="day-modal assess-modal" role="dialog" aria-modal="true" aria-labelledby="assessModalTitle">
+    <div class="assess-head">
+      <div>
+        <h3 id="assessModalTitle">Assessment schedule</h3>
+        <p class="dm-sub">Click an assessment to open its day and edit it. A module appears here once it has an assessment.</p>
+      </div>
+    </div>
+    <div class="assess-board" id="assessBoard"></div>
+    <form id="assessAddForm" class="assess-add">
+      <div class="assess-add-grid">
+        <label>Date <input type="date" id="assessDate" required min="2026-09-01" max="2027-08-31"></label>
+        <label>Module <select id="assessModuleSelect" required></select></label>
+        <label>Weight % <input type="number" id="assessWeight" min="0" max="100" step="any" inputmode="decimal" placeholder="e.g. 40 or 7.5"></label>
+        <label>Start time <input type="time" id="assessTime" step="300"></label>
+        <label>Duration <span class="dur-fields"><select id="assessDurH" aria-label="Hours"></select><input type="number" id="assessDurM" min="0" max="59" step="1" list="minuteSteps" aria-label="Minutes" inputmode="numeric"><span class="dur-unit">min</span></span></label>
+        <label class="wide">Assessment <input type="text" id="assessText" placeholder="e.g. Assignment 1 – case study report" autocomplete="off" required></label>
+      </div>
+      <div class="assess-footer">
+        <button type="button" id="assessPrintBtn" class="dm-ghost">🖨 Print schedule</button>
+        <span class="dm-spacer"></span>
+        <button type="button" class="dm-close" id="assessCloseBtn">Close</button>
+        <button type="submit" class="dm-add">Add assessment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<section id="assessPrint" class="assess-print" aria-hidden="true"></section>
+
+
+<div class="day-modal-backdrop" id="settingsModal" hidden>
+  <div class="day-modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <h3 id="settingsTitle">Settings &amp; backup</h3>
+    <p class="dm-sub">Your events, assessments and modules live in this browser only. Export a backup to keep them safe or move them to another computer.</p>
+    <section class="st-section">
+      <h4>Modules</h4>
+      <div id="moduleList" class="module-list"></div>
+      <form id="moduleAddForm" class="module-add">
+        <input type="text" id="moduleAddName" placeholder="New module name" autocomplete="off" required aria-label="New module name">
+        <button type="submit">Add module</button>
+      </form>
+    </section>
+    <section class="st-section">
+      <h4>Backup &amp; export</h4>
+      <div class="st-actions">
+        <button type="button" id="exportJsonBtn">⬇ Export backup (JSON)</button>
+        <button type="button" id="importJsonBtn">⬆ Import backup</button>
+        <input type="file" id="importJsonFile" accept="application/json,.json" hidden>
+        <button type="button" id="exportIcsBtn">📅 Export my events (.ics)</button>
+      </div>
+      <p class="st-note" id="importNote" hidden></p>
+      <p class="st-note">Importing replaces what is in this browser with the backup. The .ics file can be opened in Outlook or Google Calendar.</p>
+    </section>
+    <section class="st-section">
+      <h4>Official calendar</h4>
+      <p class="st-note" id="hiddenCountNote"></p>
+      <div class="st-actions" style="margin-top:8px"><button type="button" id="restoreOfficialBtn">Restore removed official events</button></div>
+    </section>
+    <div class="dm-actions" style="margin-top:14px"><button type="button" class="dm-close" id="settingsCloseBtn">Close</button></div>
+  </div>
+</div>
+
+<div class="day-modal-backdrop" id="confirmModal" hidden>
+  <div class="day-modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText">
+    <h3 id="confirmTitle">Remove this assessment?</h3>
+    <p class="confirm-text" id="confirmText"></p>
+    <div class="dm-actions">
+      <button type="button" class="dm-close" id="confirmNo">Cancel</button>
+      <button type="button" class="dm-danger" id="confirmYes">Remove assessment</button>
+    </div>
+  </div>
+</div>
+
+<datalist id="minuteSteps"><option value="0"><option value="5"><option value="10"><option value="15"><option value="20"><option value="25"><option value="30"><option value="35"><option value="40"><option value="45"><option value="50"><option value="55"></datalist>
+
+<div class="toast" id="toast" hidden role="status" aria-live="polite"><span id="toastText"></span><button type="button" id="toastUndo">Undo</button></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var AY = '2026-27';
+  var KEY_PREFIX = 'atuCal' + AY + ':';
+
+  // [year, month(1-12)] for each month page in order, Sep 2026 .. Aug 2027
+  var monthKeys = [
+    [2026, 9], [2026, 10], [2026, 11], [2026, 12],
+    [2027, 1], [2027, 2], [2027, 3], [2027, 4],
+    [2027, 5], [2027, 6], [2027, 7], [2027, 8]
+  ];
+
+  var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  var MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  // Official event categories: colour + what the colour means
+  var CATEGORIES = {
+    'chip-teach':    { color: '#3b82f6', label: 'Teaching / term dates' },
+    'chip-exam':     { color: '#8b5cf6', label: 'Exams & exam boards' },
+    'chip-confer':   { color: '#22c55e', label: 'Conferring' },
+    'chip-council':  { color: '#f97316', label: 'Academic Council' },
+    'chip-results':  { color: '#06b6d4', label: 'Results & consultation' },
+    'chip-deadline': { color: '#eab308', label: 'Deadlines' },
+    'chip-holiday':  { color: '#ef4444', label: 'University closed' },
+    'chip-other':    { color: '#64748b', label: 'Induction / other' }
+  };
+  var CATEGORY_ORDER = ['chip-teach', 'chip-exam', 'chip-results', 'chip-deadline', 'chip-confer', 'chip-council', 'chip-holiday', 'chip-other'];
+
+  var DEFAULT_MODULES = [
+    { cls: 'chip-mod-sdpd', name: 'Software Design & Program Development', color: '#db2777' },
+    { cls: 'chip-mod-cssp', name: 'Cybersecurity & Secure Programming',    color: '#4f46e5' },
+    { cls: 'chip-mod-wad',  name: 'Web Application Development',           color: '#0d9488' },
+    { cls: 'chip-mod-cf1',  name: 'Computer Forensics 1',                  color: '#b45309' }
+  ];
+  var MODULE_PALETTE = ['#db2777', '#4f46e5', '#0d9488', '#b45309', '#65a30d', '#dc2626', '#7c3aed', '#0369a1', '#be123c', '#4d7c0f', '#c026d3', '#0f766e'];
+
+  // ---------- Storage (keys are namespaced by academic year) ----------
+  function loadStore(key, fallback) {
+    try {
+      var raw = localStorage.getItem(KEY_PREFIX + key);
+      if (raw === null) return fallback;
+      var v = JSON.parse(raw);
+      return v === null || v === undefined ? fallback : v;
+    } catch (e) { return fallback; }
+  }
+  function saveStore(key, obj) {
+    try { localStorage.setItem(KEY_PREFIX + key, JSON.stringify(obj)); } catch (e) {}
+  }
+  // One-off migration from the un-namespaced keys used by the earlier version of this page
+  (function migrateOldKeys() {
+    var map = { 'atuCalendarCustomEvents': 'customEvents', 'atuCalendarHiddenEvents': 'hiddenEvents', 'atuCalendarModuleVisibility': 'moduleVisibility' };
+    Object.keys(map).forEach(function (oldKey) {
+      try {
+        var raw = localStorage.getItem(oldKey);
+        if (raw !== null && localStorage.getItem(KEY_PREFIX + map[oldKey]) === null) {
+          localStorage.setItem(KEY_PREFIX + map[oldKey], raw);
+        }
+      } catch (e) {}
+    });
+  })();
+
+  var customEvents = loadStore('customEvents', {});       // { 'YYYY-MM-DD': [{id, text, cls, weight}] }
+  var hiddenEvents = loadStore('hiddenEvents', {});       // { 'YYYY-MM-DD': [id, ...] }
+  var modules = loadStore('modules', null);
+  // A browser that still holds the previous default modules (the law set) moves to the current defaults
+  var OLD_DEFAULT_CLS = ['chip-mod-bl', 'chip-mod-cl', 'chip-mod-aps', 'chip-mod-cbl', 'chip-mod-blls'];
+  if (Array.isArray(modules) && modules.length === OLD_DEFAULT_CLS.length &&
+      modules.every(function (m, i) { return m.cls === OLD_DEFAULT_CLS[i]; })) {
+    modules = null;
+    Object.keys(customEvents).forEach(function (k) {
+      customEvents[k] = (customEvents[k] || []).filter(function (ev) { return OLD_DEFAULT_CLS.indexOf(ev.cls) === -1; });
+      if (!customEvents[k].length) delete customEvents[k];
+    });
+    saveStore('customEvents', customEvents);
+    try { localStorage.removeItem(KEY_PREFIX + 'modules'); } catch (e) {}
+  }
+  if (!Array.isArray(modules) || !modules.length) modules = DEFAULT_MODULES.map(function (m) { return { cls: m.cls, name: m.name, color: m.color }; });
+
+  // One-time import of the user's initial assessment entries. Stable IDs make this
+  // safe to run whenever the page opens without creating duplicates.
+  var requestedAssessments = [
+    { id: 'assessment-2026-11-02-sdpd-lab-exam-1', date: '2026-11-02', text: 'Lab Exam 1', cls: 'chip-mod-sdpd', weight: 10 },
+    { id: 'assessment-2026-11-05-sdpd-mcq1', date: '2026-11-05', text: 'MCQ1', cls: 'chip-mod-sdpd', weight: 7.5 },
+    { id: 'assessment-2026-12-10-sdpd-mcq2', date: '2026-12-10', text: 'MCQ2', cls: 'chip-mod-sdpd', weight: 7.5 },
+    { id: 'assessment-2026-12-14-sdpd-lab-exam-2', date: '2026-12-14', text: 'Lab Exam 2', cls: 'chip-mod-sdpd', weight: 10 },
+    { id: 'assessment-2027-03-01-sdpd-lab-exam-3', date: '2027-03-01', text: 'Lab Exam 3', cls: 'chip-mod-sdpd', weight: 20 },
+    { id: 'assessment-2027-03-04-sdpd-mcq3', date: '2027-03-04', text: 'MCQ3', cls: 'chip-mod-sdpd', weight: 7.5 },
+    { id: 'assessment-2027-04-22-sdpd-mcq4', date: '2027-04-22', text: 'MCQ4', cls: 'chip-mod-sdpd', weight: 7.5 },
+    { id: 'assessment-2027-04-26-sdpd-lab-exam-4', date: '2027-04-26', text: 'Lab Exam 4', cls: 'chip-mod-sdpd', weight: 20 },
+    { id: 'assessment-2027-04-29-sdpd-mcq5-optional', date: '2027-04-29', text: 'MCQ5 (optional)', cls: 'chip-mod-sdpd', weight: 7.5 },
+    { id: 'assessment-2027-01-21-sdpd-micro', date: '2027-01-21', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-01-28-sdpd-micro', date: '2027-01-28', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-02-04-sdpd-micro', date: '2027-02-04', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-02-11-sdpd-micro', date: '2027-02-11', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-02-18-sdpd-micro', date: '2027-02-18', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-02-25-sdpd-micro', date: '2027-02-25', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-03-11-sdpd-micro', date: '2027-03-11', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-03-18-sdpd-micro', date: '2027-03-18', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-04-08-sdpd-micro', date: '2027-04-08', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2027-04-15-sdpd-micro', date: '2027-04-15', text: 'Micro Assessment', cls: 'chip-mod-sdpd', weight: 1 },
+    { id: 'assessment-2026-10-17-wad-mcq1', date: '2026-10-17', text: 'MCQ1', cls: 'chip-mod-wad', weight: 10 },
+    { id: 'assessment-2026-11-14-wad-mcq2', date: '2026-11-14', text: 'MCQ2', cls: 'chip-mod-wad', weight: 20 },
+    { id: 'assessment-2026-12-12-wad-mcq3', date: '2026-12-12', text: 'MCQ3', cls: 'chip-mod-wad', weight: 30 },
+    { id: 'assessment-2027-01-11-wad-project-submission', date: '2027-01-11', text: 'Project Submission', cls: 'chip-mod-wad', weight: 40 },
+    { id: 'assessment-2026-11-10-cssp-moodle-quiz', date: '2026-11-10', text: 'Moodle Quiz', cls: 'chip-mod-cssp', weight: 20 },
+    { id: 'assessment-2026-12-15-cssp-written-exam', date: '2026-12-15', text: 'Written Exam', cls: 'chip-mod-cssp', weight: 50 },
+    { id: 'assessment-2027-01-11-cssp-project-submission', date: '2027-01-11', text: 'Project Submission', cls: 'chip-mod-cssp', weight: 30 }
+  ];
+  var assessmentsWereAdded = false;
+  requestedAssessments.forEach(function (assessment) {
+    var dayEvents = customEvents[assessment.date] || [];
+    if (!dayEvents.some(function (ev) { return ev.id === assessment.id; })) {
+      dayEvents.push({ id: assessment.id, text: assessment.text, cls: assessment.cls, weight: assessment.weight });
+      customEvents[assessment.date] = dayEvents;
+      assessmentsWereAdded = true;
+    }
+  });
+  // Remove the two Easter-break entries if they were already imported by an earlier version.
+  ['assessment-2027-03-25-sdpd-micro', 'assessment-2027-04-01-sdpd-micro'].forEach(function (removedId) {
+    Object.keys(customEvents).forEach(function (date) {
+      var before = customEvents[date].length;
+      customEvents[date] = customEvents[date].filter(function (ev) { return ev.id !== removedId; });
+      if (customEvents[date].length !== before) assessmentsWereAdded = true;
+      if (!customEvents[date].length) delete customEvents[date];
+    });
+  });
+  if (assessmentsWereAdded) saveStore('customEvents', customEvents);
+
+  function persistAll() {
+    saveStore('customEvents', customEvents);
+    saveStore('hiddenEvents', hiddenEvents);
+    saveStore('modules', modules);
+  }
+
+  // ---------- Small helpers ----------
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+  function hashStr(s) {
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return (h >>> 0).toString(36);
+  }
+  function newId() { return 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7); }
+  function ordinal(n) {
+    var v = n % 100;
+    if (v >= 11 && v <= 13) return n + 'th';
+    switch (n % 10) { case 1: return n + 'st'; case 2: return n + 'nd'; case 3: return n + 'rd'; default: return n + 'th'; }
+  }
+  function parseKey(k) { var p = k.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function toKey(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function formatDateHeading(dateKey) {
+    var p = dateKey.split('-').map(Number);
+    var d = new Date(p[0], p[1] - 1, p[2]);
+    return DAY_NAMES[d.getDay()] + ' ' + ordinal(p[2]) + ' ' + MONTH_NAMES[p[1] - 1] + ' ' + p[0];
+  }
+  function shortDate(dateKey, withMonth) {
+    var d = parseKey(dateKey);
+    return DAY_SHORT[d.getDay()] + ' ' + d.getDate() + (withMonth ? ' ' + MONTH_SHORT[d.getMonth()] : '');
+  }
+  function pageIndexForKey(dateKey) {
+    return monthKeys.findIndex(function (p) { return dateKey.indexOf(p[0] + '-' + pad2(p[1])) === 0; });
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = text;
+    return n;
+  }
+  function hexToRgba(hex, a) {
+    var h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  // ---------- Modules ----------
+  function moduleByCls(cls) {
+    for (var i = 0; i < modules.length; i++) if (modules[i].cls === cls) return modules[i];
+    return null;
+  }
+  function isModuleCls(cls) { return !!moduleByCls(cls); }
+  function displayText(ev) {
+    var microNumber = 0;
+    for (var i = 0; i < requestedAssessments.length; i++) {
+      if (requestedAssessments[i].text === 'Micro Assessment') {
+        microNumber++;
+        if (requestedAssessments[i].id === ev.id) return 'SDPD - Micro ' + microNumber;
+      }
+      if (requestedAssessments[i].cls === 'chip-mod-sdpd' && requestedAssessments[i].id === ev.id && (/^Lab Exam \d+$/.test(requestedAssessments[i].text) || /^MCQ\d+( \(optional\))?$/.test(requestedAssessments[i].text))) {
+        return 'SDPD - ' + requestedAssessments[i].text;
+      }
+    }
+    var m = moduleByCls(ev.cls);
+    if (m && m.cls === 'chip-mod-cssp') return 'CSSP: ' + ev.text;
+    if (m && m.cls === 'chip-mod-wad') return 'WebAD: ' + ev.text;
+    return m ? (m.name + ': ' + ev.text) : ev.text;
+  }
+  function colorFor(cls) {
+    var m = moduleByCls(cls);
+    if (m) return m.color;
+    return CATEGORIES[cls] ? CATEGORIES[cls].color : CATEGORIES['chip-other'].color;
+  }
+  function styleChip(chip, cls) {
+    var m = moduleByCls(cls);
+    if (m) {
+      chip.classList.add('chip-module');
+      chip.style.background = hexToRgba(m.color, 0.14);
+      chip.style.color = m.color;
+    } else {
+      chip.classList.add(CATEGORIES[cls] ? cls : 'chip-other');
+    }
+  }
+  var DEFAULT_TIME = '12:00';
+  var DEFAULT_DURATION = 30; // minutes
+  function hasTime(ev) { return !!(ev && ev.time); }
+  function durationLabel(mins) {
+    mins = Number(mins) || 0;
+    if (!mins) return '';
+    var h = Math.floor(mins / 60), m = mins % 60;
+    return (h ? h + ' h' : '') + (h && m ? ' ' : '') + (m ? m + ' min' : '');
+  }
+  function addMinutes(hhmm, mins) {
+    var p = hhmm.split(':').map(Number);
+    var t = (p[0] * 60 + p[1] + (Number(mins) || 0)) % (24 * 60);
+    return pad2(Math.floor(t / 60)) + ':' + pad2(t % 60);
+  }
+  // "10:00–12:00", "10:00" or ""
+  function timeLabel(ev) {
+    if (!hasTime(ev)) return '';
+    return ev.time + (ev.duration ? '\u2013' + addMinutes(ev.time, ev.duration) : '');
+  }
+  function timeDetail(ev) {
+    if (!hasTime(ev)) return '';
+    return timeLabel(ev) + (ev.duration ? ' (' + durationLabel(ev.duration) + ')' : '');
+  }
+  function fillHoursSelect(sel) {
+    sel.innerHTML = '';
+    for (var h = 0; h <= 8; h++) { var o = el('option', null, h + (h === 1 ? ' hour' : ' hours')); o.value = String(h); sel.appendChild(o); }
+  }
+  function setDuration(hSel, mInput, mins) {
+    mins = Math.max(0, Number(mins) || 0);
+    hSel.value = String(Math.min(8, Math.floor(mins / 60)));
+    mInput.value = String(mins % 60);
+  }
+  function readDuration(hSel, mInput) {
+    var h = Number(hSel.value) || 0;
+    var m = Math.min(59, Math.max(0, Math.round(Number(mInput.value) || 0)));
+    return h * 60 + m;
+  }
+  function moduleAssessmentCount(cls) {
+    var n = 0;
+    Object.keys(customEvents).forEach(function (k) {
+      customEvents[k].forEach(function (ev) { if (ev.cls === cls) n++; });
+    });
+    return n;
+  }
+
+  // ---------- DOM index: month frames, weeks, cells ----------
+  var main = document.getElementById('calendarMain');
+  var nav = document.getElementById('monthNav');
+  var frames = Array.prototype.slice.call(document.querySelectorAll('.page-viewport.month'));
+  var navButtons = Array.prototype.slice.call(document.querySelectorAll('.month-nav button[data-target]'));
+
+  var staticEvents = {};   // { dateKey: [{id, text, cls}] } - the official calendar, read once from the HTML
+  var cellByDate = {};     // { dateKey: cellEl }
+  var weekInfos = [];      // [{ el, pageIndex, cells: [ {el, dateKey} | null x7 ] }]
+  var weekByDate = {};     // { dateKey: weekInfo }
+
+  function buildIndex() {
+    frames.forEach(function (frame, pageIndex) {
+      var pair = monthKeys[pageIndex];
+      var year = pair[0], month = pair[1];
+      var weeks = frame.querySelectorAll('.week');
+      weeks.forEach(function (weekEl) {
+        var kids = Array.prototype.slice.call(weekEl.children);
+        var label = kids[0];
+        var info = { el: weekEl, pageIndex: pageIndex, cells: [] };
+        kids.slice(1).forEach(function (cell) {
+          var daynumEl = cell.querySelector('.daynum');
+          var day = daynumEl ? parseInt(daynumEl.textContent, 10) : 0;
+          if (cell.classList.contains('empty') || !day) { info.cells.push(null); return; }
+          var dateKey = year + '-' + pad2(month) + '-' + pad2(day);
+          cell.setAttribute('data-date', dateKey);
+          cell.setAttribute('tabindex', '0');
+          cell.setAttribute('role', 'button');
+          cellByDate[dateKey] = cell;
+          weekByDate[dateKey] = info;
+          info.cells.push({ el: cell, dateKey: dateKey });
+
+          var seen = {};
+          var list = [];
+          cell.querySelectorAll('.chips > .chip').forEach(function (chip) {
+            var text = chip.textContent.trim();
+            var cls = chip.className.split(/\s+/).filter(function (c) { return c !== 'chip'; })[0] || 'chip-other';
+            var base = 's-' + hashStr(text + '|' + cls);
+            var n = seen[base] = (seen[base] || 0) + 1;
+            list.push({ id: n > 1 ? base + '-' + n : base, text: text, cls: cls });
+          });
+          staticEvents[dateKey] = list;
+          var chipsWrap = cell.querySelector('.chips');
+          if (!chipsWrap) { chipsWrap = el('div', 'chips'); cell.appendChild(chipsWrap); }
+          chipsWrap.innerHTML = '';
+
+          cell.addEventListener('click', function () { openDayModal(dateKey, cell); });
+          cell.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDayModal(dateKey, cell); }
+          });
+        });
+        weekInfos.push(info);
+      });
+    });
+  }
+
+  // Earlier versions identified official events by position ('static-0'); map those to the stable ids
+  function migrateHiddenIds() {
+    var changed = false;
+    Object.keys(hiddenEvents).forEach(function (dateKey) {
+      var ids = hiddenEvents[dateKey];
+      if (!Array.isArray(ids)) { delete hiddenEvents[dateKey]; changed = true; return; }
+      var out = [];
+      ids.forEach(function (id) {
+        var m = /^static-(\d+)$/.exec(id);
+        if (m) {
+          var s = (staticEvents[dateKey] || [])[Number(m[1])];
+          if (s && out.indexOf(s.id) === -1) out.push(s.id);
+          changed = true;
+        } else if (out.indexOf(id) === -1) out.push(id);
+      });
+      if (out.length) hiddenEvents[dateKey] = out; else { delete hiddenEvents[dateKey]; changed = true; }
+    });
+    if (changed) saveStore('hiddenEvents', hiddenEvents);
+  }
+
+  // Events to show for a date (official minus deleted, plus the user's, minus hidden modules)
+  function visibleEvents(dateKey) {
+    var hidden = hiddenEvents[dateKey] || [];
+    var list = [];
+    (staticEvents[dateKey] || []).forEach(function (s) {
+      if (hidden.indexOf(s.id) !== -1) return;
+      list.push({ id: s.id, text: s.text, cls: s.cls, custom: false });
+    });
+    (customEvents[dateKey] || []).forEach(function (ev) {
+      list.push({ id: ev.id, text: ev.text, cls: ev.cls, weight: ev.weight, time: ev.time, duration: ev.duration, custom: true });
+    });
+    return list;
+  }
+  function eventsForDate(dateKey) {
+    // For the day editor: everything the user can act on (hidden modules included)
+    var hidden = hiddenEvents[dateKey] || [];
+    var list = [];
+    (staticEvents[dateKey] || []).forEach(function (s) {
+      if (hidden.indexOf(s.id) !== -1) return;
+      list.push({ id: s.id, text: s.text, cls: s.cls, custom: false });
+    });
+    (customEvents[dateKey] || []).forEach(function (ev) {
+      list.push({ id: ev.id, text: ev.text, cls: ev.cls, weight: ev.weight, time: ev.time, duration: ev.duration, custom: true });
+    });
+    return list;
+  }
+
+  // ---------- Rendering a week: multi-day runs become one bar across the row ----------
+  function buildChip(ev, extraCls) {
+    var chip = el('div', 'chip' + (extraCls ? ' ' + extraCls : ''));
+    styleChip(chip, ev.cls);
+    var dot = el('span', 'chipdot');
+    dot.style.background = colorFor(ev.cls);
+    chip.appendChild(dot);
+    var desc = displayText(ev) + (ev.weight !== undefined && ev.weight !== null && ev.weight !== '' ? ' (' + ev.weight + '%)' : '');
+    var full = (hasTime(ev) ? timeLabel(ev) + ' ' : '') + desc;
+    if (hasTime(ev)) {
+      // Assessments with a time: time on the first line, description on the next line of the same block
+      var text = el('span', 'chip-text chip-text-2');
+      text.appendChild(el('span', 'chip-time', timeLabel(ev)));
+      text.appendChild(el('span', 'chip-desc', desc));
+      chip.appendChild(text);
+    } else {
+      chip.appendChild(el('span', 'chip-text', full));
+    }
+    chip.title = full;
+    chip.setAttribute('data-text', full);
+    return chip;
+  }
+
+  function renderWeek(info) {
+    var perCol = info.cells.map(function (c) { return c ? visibleEvents(c.dateKey) : []; });
+
+    // Group identical events on consecutive days into runs
+    var runs = [];
+    perCol.forEach(function (events, col) {
+      var usedThisCol = [];
+      events.forEach(function (ev) {
+        var key = ev.text + '|' + ev.cls + '|' + (ev.weight === undefined ? '' : ev.weight);
+        var run = null;
+        for (var i = 0; i < runs.length; i++) {
+          if (runs[i].key === key && runs[i].end === col - 1 && usedThisCol.indexOf(runs[i]) === -1) { run = runs[i]; break; }
+        }
+        if (run) { run.end = col; run.events.push(ev); }
+        else { run = { key: key, ev: ev, start: col, end: col, events: [ev], lane: -1 }; runs.push(run); }
+        usedThisCol.push(run);
+      });
+    });
+
+    // Lanes: longest runs first so they sit at the top and align across cells
+    var spans = runs.filter(function (r) { return r.end > r.start; });
+    spans.sort(function (a, b) { return (b.end - b.start) - (a.end - a.start) || a.start - b.start; });
+    var occupied = []; // occupied[lane][col]
+    spans.forEach(function (r) {
+      var lane = 0;
+      for (;;) {
+        occupied[lane] = occupied[lane] || [];
+        var free = true;
+        for (var c = r.start; c <= r.end; c++) if (occupied[lane][c]) { free = false; break; }
+        if (free) break;
+        lane++;
+      }
+      for (var c2 = r.start; c2 <= r.end; c2++) occupied[lane][c2] = r;
+      r.lane = lane;
+    });
+
+    info.cells.forEach(function (c, col) {
+      if (!c) return;
+      var cell = c.el;
+      var wrap = cell.querySelector('.chips');
+      wrap.innerHTML = '';
+      var events = perCol[col];
+      cell.classList.toggle('closed', events.some(function (e) { return e.cls === 'chip-holiday'; }));
+      cell.classList.toggle('has-assessment', events.some(function (e) { return e.custom && isModuleCls(e.cls); }));
+
+      var maxLane = -1;
+      occupied.forEach(function (row, lane) { if (row[col]) maxLane = Math.max(maxLane, lane); });
+      for (var lane = 0; lane <= maxLane; lane++) {
+        var r = occupied[lane][col];
+        var node;
+        if (!r) { node = el('div', 'chip chip-spacer'); node.setAttribute('data-count', '0'); }
+        else if (r.start === col) {
+          node = el('div', 'chip chip-spacer chip-span-host');
+          node.setAttribute('data-count', '1');
+          node.setAttribute('data-text', displayText(r.ev));
+          var bar = buildChip(r.ev, 'chip-span');
+          bar._run = r;
+          node.appendChild(bar);
+          node._bar = bar;
+        }
+        else { node = el('div', 'chip chip-spacer'); node.setAttribute('data-count', '1'); node.setAttribute('data-text', displayText(r.ev)); node.textContent = '\u00a0'; }
+        node.setAttribute('data-lane', lane);
+        wrap.appendChild(node);
+      }
+      runs.forEach(function (r) {
+        if (r.end > r.start || r.start !== col) return;
+        var chip = buildChip(r.ev);
+        chip.setAttribute('data-count', '1');
+        wrap.appendChild(chip);
+      });
+      var more = el('div', 'chip-more');
+      more.hidden = true;
+      wrap.appendChild(more);
+
+      cell.setAttribute('aria-label', formatDateHeading(c.dateKey) + ', ' + events.length + (events.length === 1 ? ' event' : ' events') + '. Press Enter to view or add events.');
+    });
+    info.spans = spans;
+  }
+
+  // Measure and align: bar widths, uniform lane heights, then "+N more" where a cell is full (print)
+  function layoutWeek(info) {
+    var nodes = [];
+    info.cells.forEach(function (c) {
+      if (!c) return;
+      c.el.querySelectorAll('.chips > [data-lane]').forEach(function (n) { n.style.height = ''; n.style.display = ''; if (n._bar) n._bar.style.width = ''; nodes.push(n); });
+      c.el.querySelectorAll('.chips > .chip:not([data-lane])').forEach(function (n) { n.style.display = ''; });
+      var more = c.el.querySelector('.chip-more');
+      if (more) more.hidden = true;
+    });
+    if (!nodes.length && !info.spans.length) { info.cells.forEach(function (c) { if (c) overflowCell(c.el); }); return; }
+
+    // 1. Bar widths from the geometry of the last cell in the run
+    nodes.forEach(function (n) {
+      if (!n._bar) return;
+      var r = n._bar._run;
+      var endCell = info.cells[r.end].el;
+      var endRect = endCell.getBoundingClientRect();
+      var padR = parseFloat(getComputedStyle(endCell).paddingRight) || 0;
+      var left = n.getBoundingClientRect().left;
+      n._bar.style.width = Math.max(0, endRect.right - padR - left) + 'px';
+    });
+    // 2. Uniform height per lane (the bar's natural height at that width)
+    var laneH = [];
+    nodes.forEach(function (n) {
+      if (!n._bar) return;
+      var lane = Number(n.getAttribute('data-lane'));
+      laneH[lane] = Math.max(laneH[lane] || 0, n._bar.offsetHeight);
+    });
+    nodes.forEach(function (n) {
+      var lane = Number(n.getAttribute('data-lane'));
+      if (laneH[lane]) n.style.height = laneH[lane] + 'px';
+    });
+    // 3. Overflow -> "+N more" (only bites when the cell height is fixed, i.e. print).
+    //    A lane that has to be cut in one cell is cut across the whole row so a bar
+    //    never runs over another cell's "+N more" line.
+    var cutLane = Infinity;
+    info.cells.forEach(function (c) {
+      if (!c) return;
+      var total = c.el.querySelectorAll('.chips > [data-lane]').length;
+      var visible = overflowCell(c.el, Infinity);
+      if (visible < total) cutLane = Math.min(cutLane, visible);
+    });
+    if (cutLane !== Infinity) {
+      info.cells.forEach(function (c) { if (c) overflowCell(c.el, cutLane); });
+    }
+  }
+
+  // Hides whatever does not fit in the cell and shows "+N more"; returns how many lane rows stay visible
+  function overflowCell(cell, maxLanes) {
+    var wrap = cell.querySelector('.chips');
+    var more = wrap.querySelector('.chip-more');
+    var items = Array.prototype.slice.call(wrap.children).filter(function (n) { return n !== more; });
+    items.forEach(function (n) { n.style.display = ''; });
+    more.hidden = true;
+    var laneCount = items.filter(function (n) { return n.hasAttribute('data-lane'); }).length;
+    if (!items.length) return laneCount;
+    var cs = getComputedStyle(cell);
+    var limit = cell.clientHeight - (parseFloat(cs.paddingBottom) || 0);
+    var cellTop = cell.getBoundingClientRect().top + (parseFloat(cs.borderTopWidth) || 0);
+    function bottomOf(n) { return n.getBoundingClientRect().bottom - cellTop; }
+    items.forEach(function (n) { n.classList.remove('chip-clipped'); n.style.maxHeight = ''; });
+    var cut = items.length;
+    for (var i = 0; i < items.length; i++) {
+      var lane = items[i].hasAttribute('data-lane') ? Number(items[i].getAttribute('data-lane')) : -1;
+      if (lane >= maxLanes || bottomOf(items[i]) > limit + 0.5) { cut = i; break; }
+    }
+    if (cut === items.length) return laneCount;
+    // Hide from the first overflowing item, keeping room for the "+N more" line.
+    // The first item of a day always stays (clipped if it is the one that is too tall).
+    for (;;) {
+      var hiddenCount = 0, hiddenTexts = [];
+      for (var j = 0; j < items.length; j++) {
+        var hide = j >= cut;
+        items[j].style.display = hide ? 'none' : '';
+        if (hide && Number(items[j].getAttribute('data-count') || 1)) { hiddenCount++; hiddenTexts.push(items[j].getAttribute('data-text') || ''); }
+      }
+      more.hidden = hiddenCount === 0;
+      more.textContent = '+' + hiddenCount + ' more';
+      more.title = hiddenTexts.join('\n');
+      if (hiddenCount === 0 || bottomOf(more) <= limit + 0.5 || cut <= 1) break;
+      cut--;
+    }
+    if (cut <= 1) {
+      cut = 1;
+      var first = items[0];
+      first.style.display = '';
+      var room = limit - (first.getBoundingClientRect().top - cellTop) - (more.hidden ? 0 : more.offsetHeight + 2);
+      if (first.getBoundingClientRect().height > room + 0.5 && !first.hasAttribute('data-lane')) {
+        first.classList.add('chip-clipped');
+        first.style.maxHeight = Math.max(12, room) + 'px';
+      }
+    }
+    return Math.min(laneCount, cut);
+  }
+
+  function renderAll() {
+    weekInfos.forEach(renderWeek);
+    frames.forEach(function (f, i) { renderAgenda(i); });
+    highlightToday();
+  }
+  function layoutAll() {
+    weekInfos.forEach(layoutWeek);
+  }
+  function renderDate(dateKey) {
+    var info = weekByDate[dateKey];
+    if (info) { renderWeek(info); layoutWeek(info); }
+    var pi = pageIndexForKey(dateKey);
+    if (pi !== -1) renderAgenda(pi);
+    highlightToday();
+  }
+  var layoutTimer = null;
+  function scheduleLayout() {
+    clearTimeout(layoutTimer);
+    layoutTimer = setTimeout(function () { fitPages(); layoutAll(); }, 60);
+  }
+
+  function highlightToday() {
+    var key = toKey(new Date());
+    document.querySelectorAll('.cell[data-date]').forEach(function (cell) {
+      cell.classList.toggle('today', cell.getAttribute('data-date') === key);
+    });
+  }
+
+  // ---------- Key dates overview page (official events, runs compressed to ranges) ----------
+  var overviewFrame = null;
+  function buildOverview() {
+    var byKey = {};
+    Object.keys(staticEvents).forEach(function (dateKey) {
+      staticEvents[dateKey].forEach(function (s) {
+        var k = s.text + '|' + s.cls;
+        if (!byKey[k]) byKey[k] = { text: s.text, cls: s.cls, dates: [] };
+        byKey[k].dates.push(dateKey);
+      });
+    });
+    var rows = [];
+    Object.keys(byKey).forEach(function (k) {
+      var e = byKey[k];
+      e.dates.sort();
+      var start = e.dates[0], prev = e.dates[0];
+      for (var i = 1; i <= e.dates.length; i++) {
+        var d = e.dates[i];
+        var gap = d ? (parseKey(d) - parseKey(prev)) / 86400000 : 99;
+        if (gap > 2) { rows.push({ start: start, end: prev, text: e.text, cls: e.cls }); start = d; }
+        prev = d;
+      }
+    });
+    rows.sort(function (a, b) { return a.start < b.start ? -1 : a.start > b.start ? 1 : (a.end < b.end ? -1 : 1); });
+
+    var frame = el('div', 'page-viewport overview');
+    var page = el('section', 'page');
+    var header = el('div', 'page-header');
+    var title = el('div', 'month-title');
+    title.appendChild(el('div', 'month-name', 'Key dates'));
+    title.appendChild(el('div', 'month-year', 'Academic Year ' + AY + ' at a glance'));
+    header.appendChild(title);
+    var right = el('div', 'header-right');
+    right.appendChild(el('div', 'ay-badge', 'Academic Year 2026\u201327'));
+    right.appendChild(el('div', 'page-no', 'Page ' + (frames.length + 1) + ' of ' + (frames.length + 1)));
+    header.appendChild(right);
+    page.appendChild(header);
+    page.appendChild(el('p', 'ov-intro', 'Official dates only. Click any month in the sidebar for the full grid; click a day to add your own events.'));
+
+    var body = el('div', 'overview-body');
+    var currentMonth = null, monthBox = null;
+    rows.forEach(function (r) {
+      var sd = parseKey(r.start), ed = parseKey(r.end);
+      var mk = sd.getFullYear() + '-' + pad2(sd.getMonth() + 1);
+      if (mk !== currentMonth) {
+        currentMonth = mk;
+        monthBox = el('div', 'ov-month');
+        monthBox.appendChild(el('h4', null, MONTH_NAMES[sd.getMonth()] + ' ' + sd.getFullYear()));
+        body.appendChild(monthBox);
+      }
+      var row = el('div', 'ov-row');
+      var dateText;
+      if (r.start === r.end) dateText = shortDate(r.start, false);
+      else if (sd.getMonth() === ed.getMonth()) dateText = DAY_SHORT[sd.getDay()] + ' ' + sd.getDate() + ' \u2013 ' + DAY_SHORT[ed.getDay()] + ' ' + ed.getDate();
+      else dateText = shortDate(r.start, true) + ' \u2013 ' + shortDate(r.end, true);
+      row.appendChild(el('span', 'ov-date', dateText));
+      var dot = el('span', 'ov-dot');
+      dot.style.background = colorFor(r.cls);
+      row.appendChild(dot);
+      row.appendChild(el('span', 'ov-text', r.text));
+      monthBox.appendChild(row);
+    });
+    page.appendChild(body);
+    frame.appendChild(page);
+
+    // Mobile agenda for the overview: same rows as a flat list
+    var agenda = el('div', 'agenda');
+    var h2 = el('h2', null, 'Key dates ');
+    h2.appendChild(el('small', null, AY));
+    agenda.appendChild(h2);
+    rows.forEach(function (r) {
+      var day = el('div', 'agenda-day');
+      day.style.cursor = 'default';
+      var sd = parseKey(r.start);
+      var dt = el('div', 'agenda-date', r.start === r.end ? shortDate(r.start, true) : shortDate(r.start, true) + ' \u2013 ' + shortDate(r.end, true));
+      dt.appendChild(el('small', null, String(sd.getFullYear())));
+      day.appendChild(dt);
+      day.appendChild(buildChip({ text: r.text, cls: r.cls }));
+      agenda.appendChild(day);
+    });
+    frame.appendChild(agenda);
+
+    main.appendChild(frame);
+    overviewFrame = frame;
+  }
+
+  // ---------- Mobile agenda per month ----------
+  function renderAgenda(pageIndex) {
+    var frame = frames[pageIndex];
+    var agenda = frame.querySelector('.agenda');
+    if (!agenda) { agenda = el('div', 'agenda'); frame.appendChild(agenda); }
+    agenda.innerHTML = '';
+    var pair = monthKeys[pageIndex];
+    var h2 = el('h2', null, MONTH_NAMES[pair[1] - 1] + ' ');
+    h2.appendChild(el('small', null, String(pair[0])));
+    agenda.appendChild(h2);
+    var any = false;
+    frame.querySelectorAll('.week').forEach(function (weekEl) {
+      var label = weekEl.querySelector('.weeklabel');
+      var weekText = label && label.firstChild && label.firstChild.nodeType === 3 ? label.firstChild.textContent.trim() : '';
+      var isAcademic = label && label.classList.contains('academic');
+      weekEl.querySelectorAll('.cell[data-date]').forEach(function (cell) {
+        var dateKey = cell.getAttribute('data-date');
+        var events = visibleEvents(dateKey);
+        var isToday = cell.classList.contains('today');
+        if (!events.length && !isToday) return;
+        any = true;
+        var day = el('div', 'agenda-day');
+        var dt = el('div', 'agenda-date', shortDate(dateKey, true));
+        if (isToday) dt.appendChild(el('small', null, 'Today'));
+        if (isAcademic && weekText) dt.appendChild(el('span', 'agenda-week', 'Wk ' + weekText));
+        day.appendChild(dt);
+        events.forEach(function (ev) { day.appendChild(buildChip(ev)); });
+        day.setAttribute('tabindex', '0');
+        day.setAttribute('role', 'button');
+        day.addEventListener('click', function () { openDayModal(dateKey, cell); });
+        day.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDayModal(dateKey, cell); } });
+        agenda.appendChild(day);
+      });
+    });
+    if (!any) agenda.appendChild(el('div', 'agenda-empty', 'No events this month.'));
+  }
+
+  // ---------- Modal plumbing: focus trap + focus return ----------
+  var openModals = [];
+  function focusables(root) {
+    return Array.prototype.slice.call(root.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+      .filter(function (n) { return !n.hidden && !n.disabled && n.offsetParent !== null; });
+  }
+  function openModal(backdrop, focusEl) {
+    backdrop._opener = document.activeElement;
+    backdrop.hidden = false;
+    openModals.push(backdrop);
+    var target = focusEl || focusables(backdrop.querySelector('.day-modal'))[0];
+    if (target) target.focus();
+  }
+  function closeModal(backdrop) {
+    backdrop.hidden = true;
+    var i = openModals.indexOf(backdrop);
+    if (i !== -1) openModals.splice(i, 1);
+    var opener = backdrop._opener;
+    backdrop._opener = null;
+    if (opener && typeof opener.focus === 'function' && document.body.contains(opener)) opener.focus();
+  }
+  document.addEventListener('keydown', function (e) {
+    if (!openModals.length) return;
+    var top = openModals[openModals.length - 1];
+    if (e.key === 'Escape') { e.preventDefault(); closeTop(); return; }
+    if (e.key !== 'Tab') return;
+    var list = focusables(top.querySelector('.day-modal'));
+    if (!list.length) return;
+    var first = list[0], last = list[list.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  function closeTop() {
+    var top = openModals[openModals.length - 1];
+    if (top === confirmModal) closeConfirm();
+    else if (top === dayModal) closeDayModal();
+    else if (top === assessModal) closeAssessModal();
+    else if (top === settingsModal) closeSettingsModal();
+  }
+
+  // ---------- Toast with undo ----------
+  var toast = document.getElementById('toast');
+  var toastText = document.getElementById('toastText');
+  var toastUndo = document.getElementById('toastUndo');
+  var toastTimer = null;
+  var undoAction = null;
+  function showToast(text, onUndo) {
+    toastText.textContent = text;
+    undoAction = onUndo || null;
+    toastUndo.hidden = !onUndo;
+    toast.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 7000);
+  }
+  function hideToast() { toast.hidden = true; undoAction = null; }
+  toastUndo.addEventListener('click', function () {
+    var fn = undoAction;
+    hideToast();
+    if (fn) fn();
+  });
+
+  function hasWeight(ev) { return ev.weight !== undefined && ev.weight !== null && ev.weight !== ''; }
+
+  // ---------- Confirmation dialog ----------
+  var confirmModal = document.getElementById('confirmModal');
+  var confirmTitle = document.getElementById('confirmTitle');
+  var confirmText = document.getElementById('confirmText');
+  var confirmYes = document.getElementById('confirmYes');
+  var confirmNo = document.getElementById('confirmNo');
+  var confirmAction = null;
+  function askConfirm(title, text, yesLabel, onYes) {
+    confirmTitle.textContent = title;
+    confirmText.textContent = text;
+    confirmYes.textContent = yesLabel || 'Delete';
+    confirmAction = onYes;
+    openModal(confirmModal, confirmNo);
+  }
+  function closeConfirm() { confirmAction = null; closeModal(confirmModal); }
+  confirmNo.addEventListener('click', closeConfirm);
+  confirmYes.addEventListener('click', function () {
+    var fn = confirmAction;
+    closeConfirm();
+    if (fn) fn();
+  });
+  confirmModal.addEventListener('click', function (e) { if (e.target === confirmModal) closeConfirm(); });
+
+  // ---------- Day modal (add / edit / delete events) ----------
+  var dayModal = document.getElementById('dayModal');
+  var dayModalTitle = document.getElementById('dayModalTitle');
+  var dayModalList = document.getElementById('dayModalList');
+  var dayModalForm = document.getElementById('dayModalForm');
+  var dayModalText = document.getElementById('dayModalText');
+  var dayModalCloseBtn = document.getElementById('dayModalCloseBtn');
+  var colorSwatches = Array.prototype.slice.call(document.querySelectorAll('.dm-swatch'));
+  var dayModalAssessBtn = document.getElementById('dayModalAssessBtn');
+  var dayModalModule = document.getElementById('dayModalModule');
+  var dayModalWeight = document.getElementById('dayModalWeight');
+  var dayModalTimeRow = document.getElementById('dayModalTimeRow');
+  var dayModalTime = document.getElementById('dayModalTime');
+  var dayModalDurH = document.getElementById('dayModalDurH');
+  var dayModalDurM = document.getElementById('dayModalDurM');
+  fillHoursSelect(dayModalDurH);
+  var dayModalEditingHint = document.getElementById('dayModalEditingHint');
+  var dayModalCancelEdit = document.getElementById('dayModalCancelEdit');
+  var dayModalSubmitBtn = document.getElementById('dayModalSubmitBtn');
+  var dayModalCatName = document.getElementById('dayModalCatName');
+  var selectedCls = 'chip-other';
+  var isAssessmentSelected = false;
+  var currentDateKey = null;
+  var currentCell = null;
+  var editingEvent = null;
+
+  dayModalCancelEdit.addEventListener('click', function (e) { e.preventDefault(); stopEditing(); dayModalText.focus(); });
+
+  colorSwatches.forEach(function (btn) {
+    var cls = btn.getAttribute('data-cls');
+    btn.style.background = CATEGORIES[cls].color;
+    btn.title = CATEGORIES[cls].label;
+    btn.setAttribute('aria-label', CATEGORIES[cls].label);
+    btn.addEventListener('click', function () { selectColor(cls); });
+  });
+  dayModalAssessBtn.addEventListener('click', selectAssessment);
+
+  function selectColor(cls) {
+    isAssessmentSelected = false;
+    selectedCls = cls;
+    dayModalAssessBtn.classList.remove('selected');
+    dayModalAssessBtn.setAttribute('aria-pressed', 'false');
+    dayModalModule.hidden = true;
+    dayModalModule.disabled = true;   // a disabled control is skipped by form validation
+    dayModalWeight.hidden = true;
+    dayModalWeight.disabled = true;
+    dayModalTimeRow.hidden = true;
+    dayModalTime.disabled = true;
+    dayModalDurH.disabled = true;
+    dayModalDurM.disabled = true;
+    colorSwatches.forEach(function (btn) {
+      var on = btn.getAttribute('data-cls') === cls;
+      btn.classList.toggle('selected', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    dayModalCatName.innerHTML = '';
+    dayModalCatName.appendChild(document.createTextNode('Category: '));
+    dayModalCatName.appendChild(el('b', null, CATEGORIES[cls].label));
+  }
+  function selectAssessment() {
+    isAssessmentSelected = true;
+    colorSwatches.forEach(function (btn) { btn.classList.remove('selected'); btn.setAttribute('aria-pressed', 'false'); });
+    dayModalAssessBtn.classList.add('selected');
+    dayModalAssessBtn.setAttribute('aria-pressed', 'true');
+    dayModalModule.hidden = false;
+    dayModalModule.disabled = false;
+    dayModalWeight.hidden = false;
+    dayModalWeight.disabled = false;
+    dayModalTimeRow.hidden = false;
+    dayModalTime.disabled = false;
+    dayModalDurH.disabled = false;
+    dayModalDurM.disabled = false;
+    // A new assessment starts at noon for half an hour unless told otherwise
+    if (!editingEvent) { dayModalTime.value = DEFAULT_TIME; setDuration(dayModalDurH, dayModalDurM, DEFAULT_DURATION); }
+    dayModalCatName.innerHTML = '';
+    dayModalCatName.appendChild(document.createTextNode('Category: '));
+    dayModalCatName.appendChild(el('b', null, 'Assessment (choose a module)'));
+  }
+  function stopEditing() {
+    editingEvent = null;
+    dayModalEditingHint.hidden = true;
+    dayModalSubmitBtn.textContent = 'Add event';
+    dayModalText.value = '';
+    dayModalWeight.value = '';
+    dayModalTime.value = DEFAULT_TIME;
+    setDuration(dayModalDurH, dayModalDurM, DEFAULT_DURATION);
+    dayModalModule.selectedIndex = 0;
+    selectColor('chip-other');
+  }
+  function beginEditEvent(ev) {
+    editingEvent = { id: ev.id, custom: ev.custom };
+    dayModalText.value = ev.text;
+    if (isModuleCls(ev.cls)) {
+      selectAssessment();
+      dayModalModule.value = ev.cls;
+      dayModalWeight.value = ev.weight === undefined || ev.weight === null ? '' : ev.weight;
+      dayModalTime.value = ev.time || DEFAULT_TIME;
+      setDuration(dayModalDurH, dayModalDurM, ev.duration === undefined ? DEFAULT_DURATION : ev.duration);
+    } else {
+      selectColor(CATEGORIES[ev.cls] ? ev.cls : 'chip-other');
+    }
+    dayModalEditingHint.hidden = false;
+    dayModalSubmitBtn.textContent = 'Update event';
+    dayModalText.focus();
+    dayModalText.select();
+  }
+  function renderModalList() {
+    var events = eventsForDate(currentDateKey);
+    dayModalList.innerHTML = '';
+    if (!events.length) { dayModalList.appendChild(el('div', 'dm-empty', 'No events yet.')); return; }
+    events.forEach(function (ev) {
+      var item = el('div', 'dm-item');
+      item.title = 'Click to edit';
+      item.setAttribute('role', 'button');
+      item.setAttribute('tabindex', '0');
+      var dot = el('span', 'chipdot');
+      dot.style.background = colorFor(ev.cls);
+      dot.style.marginTop = '3px';
+      var text = el('span', 'dm-text', displayText(ev) + (ev.weight !== undefined && ev.weight !== null && ev.weight !== '' ? ' (' + ev.weight + '%)' : '') + (hasTime(ev) ? ' \u00b7 ' + timeDetail(ev) : ''));
+      var edit = el('span', 'dm-edit', '\u270e');
+      edit.setAttribute('aria-hidden', 'true');
+      var del = el('span', 'dm-del', '\u00d7');
+      del.title = ev.custom ? 'Delete this event' : 'Remove this official event from your view';
+      del.setAttribute('role', 'button');
+      del.setAttribute('tabindex', '0');
+      del.setAttribute('aria-label', del.title);
+      del.addEventListener('click', function (e) { e.stopPropagation(); deleteEvent(currentDateKey, ev); });
+      del.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); deleteEvent(currentDateKey, ev); } });
+      item.appendChild(dot);
+      item.appendChild(text);
+      item.appendChild(edit);
+      item.appendChild(del);
+      item.addEventListener('click', function () { beginEditEvent(ev); });
+      item.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); beginEditEvent(ev); } });
+      dayModalList.appendChild(item);
+    });
+  }
+
+  function deleteEvent(dateKey, ev) {
+    if (ev.custom && isModuleCls(ev.cls)) {
+      var m = moduleByCls(ev.cls);
+      askConfirm('Remove this assessment?',
+        '\u201c' + ev.text + '\u201d \u2014 ' + m.name + (hasWeight(ev) ? ' (' + ev.weight + '%)' : '') + ', ' + formatDateHeading(dateKey) + '.',
+        'Remove assessment',
+        function () { deleteEventNow(dateKey, ev); });
+      return;
+    }
+    deleteEventNow(dateKey, ev);
+  }
+  function deleteEventNow(dateKey, ev) {
+    var snapshot = { id: ev.id, text: ev.text, cls: ev.cls, weight: ev.weight, time: ev.time, duration: ev.duration };
+    if (ev.custom) {
+      customEvents[dateKey] = (customEvents[dateKey] || []).filter(function (e) { return e.id !== ev.id; });
+      if (!customEvents[dateKey].length) delete customEvents[dateKey];
+      saveStore('customEvents', customEvents);
+    } else {
+      if (!hiddenEvents[dateKey]) hiddenEvents[dateKey] = [];
+      if (hiddenEvents[dateKey].indexOf(ev.id) === -1) hiddenEvents[dateKey].push(ev.id);
+      saveStore('hiddenEvents', hiddenEvents);
+    }
+    if (editingEvent && editingEvent.id === ev.id) stopEditing();
+    afterDataChange(dateKey);
+    showToast((ev.custom ? 'Deleted ' : 'Removed ') + '\u201c' + displayText(ev) + '\u201d', function () {
+      if (ev.custom) {
+        if (!customEvents[dateKey]) customEvents[dateKey] = [];
+        customEvents[dateKey].push(snapshot);
+        saveStore('customEvents', customEvents);
+      } else {
+        hiddenEvents[dateKey] = (hiddenEvents[dateKey] || []).filter(function (id) { return id !== ev.id; });
+        if (!hiddenEvents[dateKey].length) delete hiddenEvents[dateKey];
+        saveStore('hiddenEvents', hiddenEvents);
+      }
+      afterDataChange(dateKey);
+    });
+  }
+
+  function afterDataChange(dateKey) {
+    if (dateKey) renderDate(dateKey); else { renderAll(); layoutAll(); }
+    if (!dayModal.hidden && currentDateKey) renderModalList();
+    if (!assessModal.hidden) renderAssessBoard();
+    if (!settingsModal.hidden) renderSettings();
+    renderNavDots();
+  }
+
+  function openDayModal(dateKey, cell, editEventId) {
+    currentDateKey = dateKey;
+    currentCell = cell;
+    dayModalTitle.textContent = formatDateHeading(dateKey);
+    populateModuleSelects();
+    if (editEventId) { var evm = eventsForDate(dateKey).filter(function (e) { return e.id === editEventId; })[0]; if (evm && isModuleCls(evm.cls)) dayModalModule.value = evm.cls; }
+    renderModalList();
+    stopEditing();
+    openModal(dayModal, dayModalText);
+    if (editEventId) {
+      var match = eventsForDate(dateKey).filter(function (e) { return e.id === editEventId; })[0];
+      if (match) beginEditEvent(match);
+    }
+  }
+  function closeDayModal() {
+    closeModal(dayModal);
+    currentDateKey = null;
+    currentCell = null;
+    stopEditing();
+  }
+
+  dayModalForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var text = dayModalText.value.trim();
+    if (!text || !currentDateKey) return;
+    var cls = isAssessmentSelected ? dayModalModule.value : selectedCls;
+    if (isAssessmentSelected && !cls) { dayModalModule.reportValidity(); return; }
+    var weight = isAssessmentSelected && dayModalWeight.value !== '' ? Number(dayModalWeight.value) : undefined;
+    var time = isAssessmentSelected && dayModalTime.value ? dayModalTime.value : undefined;
+    var duration = isAssessmentSelected && time && readDuration(dayModalDurH, dayModalDurM) ? readDuration(dayModalDurH, dayModalDurM) : undefined;
+    var dateKey = currentDateKey;
+
+    if (editingEvent && editingEvent.custom) {
+      var existing = (customEvents[dateKey] || []).filter(function (e2) { return e2.id === editingEvent.id; })[0];
+      if (existing) { existing.text = text; existing.cls = cls; existing.weight = weight; existing.time = time; existing.duration = duration; }
+    } else if (editingEvent && !editingEvent.custom) {
+      // Editing an official entry: hide the original and replace it with an editable copy
+      if (!hiddenEvents[dateKey]) hiddenEvents[dateKey] = [];
+      if (hiddenEvents[dateKey].indexOf(editingEvent.id) === -1) hiddenEvents[dateKey].push(editingEvent.id);
+      saveStore('hiddenEvents', hiddenEvents);
+      if (!customEvents[dateKey]) customEvents[dateKey] = [];
+      customEvents[dateKey].push({ id: newId(), text: text, cls: cls, weight: weight, time: time, duration: duration });
+    } else {
+      if (!customEvents[dateKey]) customEvents[dateKey] = [];
+      customEvents[dateKey].push({ id: newId(), text: text, cls: cls, weight: weight, time: time, duration: duration });
+    }
+    saveStore('customEvents', customEvents);
+    stopEditing();
+    afterDataChange(dateKey);
+    dayModalText.focus();
+  });
+
+  dayModalCloseBtn.addEventListener('click', closeDayModal);
+  dayModal.addEventListener('click', function (e) { if (e.target === dayModal) closeDayModal(); });
+
+  // ---------- Week helpers ----------
+  // "Wk 5", "Reading Week", "Easter" or "" for exam/holiday weeks
+  function weekLabelFor(dateKey) {
+    var info = weekByDate[dateKey];
+    if (!info) return '';
+    var label = info.el.querySelector('.weeklabel');
+    if (!label) return '';
+    var t = label.firstChild && label.firstChild.nodeType === 3 ? label.firstChild.textContent.trim() : '';
+    if (!t) return '';
+    return label.classList.contains('academic') ? 'Wk ' + t : t;
+  }
+
+  function fillModuleSelect(sel, placeholder) {
+    var current = sel.value;
+    sel.innerHTML = '';
+    var ph = el('option', null, placeholder);
+    ph.value = '';
+    ph.disabled = true;
+    ph.selected = true;
+    sel.appendChild(ph);
+    modules.forEach(function (m) { var o = el('option', null, m.name); o.value = m.cls; sel.appendChild(o); });
+    if (current && isModuleCls(current)) sel.value = current;
+  }
+  function populateModuleSelects() {
+    fillModuleSelect(dayModalModule, 'Select module…');
+    fillModuleSelect(assessModuleSelect, 'Module…');
+  }
+
+  // ---------- Assessment board ----------
+  var assessNavBtn = document.getElementById('assessNavBtn');
+  var assessNavDots = document.getElementById('assessNavDots');
+  var assessModal = document.getElementById('assessModal');
+  var assessBoard = document.getElementById('assessBoard');
+  var assessAddForm = document.getElementById('assessAddForm');
+  var assessDate = document.getElementById('assessDate');
+  var assessModuleSelect = document.getElementById('assessModuleSelect');
+  var assessWeight = document.getElementById('assessWeight');
+  var assessTime = document.getElementById('assessTime');
+  var assessDurH = document.getElementById('assessDurH');
+  var assessDurM = document.getElementById('assessDurM');
+  fillHoursSelect(assessDurH);
+  var assessText = document.getElementById('assessText');
+  var assessCloseBtn = document.getElementById('assessCloseBtn');
+  var assessPrintBtn = document.getElementById('assessPrintBtn');
+  var assessPrint = document.getElementById('assessPrint');
+
+  function renderNavDots() {
+    assessNavDots.innerHTML = '';
+    modules.slice(0, 6).forEach(function (m) {
+      var d = el('span');
+      d.style.background = m.color;
+      assessNavDots.appendChild(d);
+    });
+  }
+
+  function collectAssessments() {
+    var list = [];
+    Object.keys(customEvents).forEach(function (dateKey) {
+      customEvents[dateKey].forEach(function (ev) { if (isModuleCls(ev.cls)) list.push({ dateKey: dateKey, ev: ev }); });
+    });
+    list.sort(function (a, b) {
+      var ka = a.dateKey + ' ' + (a.ev.time || '99:99'), kb = b.dateKey + ' ' + (b.ev.time || '99:99');
+      return ka < kb ? -1 : ka > kb ? 1 : 0;
+    });
+    return list;
+  }
+  function isOptionalAssessment(ev) {
+    return !!ev && (ev.id === 'assessment-2027-04-29-sdpd-mcq5-optional' || ev.text === 'MCQ5 (optional)');
+  }
+  function moduleStats(m, items) {
+    var mine = items.filter(function (e) { return e.ev.cls === m.cls; });
+    var total = 0, weighted = 0, optional = 0;
+    mine.forEach(function (e) {
+      if (isOptionalAssessment(e.ev)) { optional++; return; }
+      if (hasWeight(e.ev)) { total += Number(e.ev.weight) || 0; weighted++; }
+    });
+    return { items: mine, total: total, weighted: weighted, optional: optional };
+  }
+  // { text, cls } describing how much of the 100% is scheduled and what is missing
+  function weightStatus(st) {
+    var note = st.optional ? ' (MCQ5 optional \u2014 best 4 of 5 MCQs count)' : '';
+    if (!st.weighted) return { text: 'No weights entered yet' + note, cls: 'none', missing: 100 };
+    if (st.total > 100) return { text: st.total + '% scheduled \u2014 ' + (st.total - 100) + '% over' + note, cls: 'over', missing: 0 };
+    if (st.total < 100) return { text: st.total + '% scheduled \u2014 ' + (100 - st.total) + '% still to add' + note, cls: 'under', missing: 100 - st.total };
+    return { text: '100% scheduled \u2014 complete' + note, cls: 'ok', missing: 0 };
+  }
+  function boardModules() { return modules.slice(); }
+
+  function buildAssessCard(entry) {
+    var card = el('div', 'assess-card');
+    card.title = 'Open this day to edit or delete';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    var top = el('div', 'assess-card-top');
+    var d = parseKey(entry.dateKey);
+    top.appendChild(el('span', 'assess-card-date', DAY_SHORT[d.getDay()] + ' ' + d.getDate() + ' ' + MONTH_SHORT[d.getMonth()]));
+    if (hasTime(entry.ev)) {
+      var tm = el('span', 'assess-card-time', timeLabel(entry.ev));
+      if (entry.ev.duration) tm.title = durationLabel(entry.ev.duration);
+      top.appendChild(tm);
+    }
+    var wk = weekLabelFor(entry.dateKey);
+    if (wk) top.appendChild(el('span', 'assess-card-week', wk));
+    if (hasWeight(entry.ev)) top.appendChild(el('span', 'assess-card-weight', entry.ev.weight + '%'));
+    card.appendChild(top);
+    card.appendChild(el('div', 'assess-card-text', entry.ev.text));
+    var del = el('button', 'assess-card-del', '×');
+    del.type = 'button';
+    del.title = 'Delete this assessment';
+    del.setAttribute('aria-label', 'Delete ' + entry.ev.text);
+    del.addEventListener('click', function (e) {
+      e.stopPropagation();
+      deleteEvent(entry.dateKey, { id: entry.ev.id, text: entry.ev.text, cls: entry.ev.cls, weight: entry.ev.weight, time: entry.ev.time, duration: entry.ev.duration, custom: true });
+    });
+    card.appendChild(del);
+    function go() {
+      var cell = cellByDate[entry.dateKey];
+      var pageIndex = pageIndexForKey(entry.dateKey);
+      closeAssessModal();
+      if (pageIndex !== -1) goToMonth(pageIndex, true);
+      if (cell) setTimeout(function () { openDayModal(entry.dateKey, cell, entry.ev.id); }, 350);
+    }
+    card.addEventListener('click', go);
+    card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    return card;
+  }
+
+  function renderAssessBoard() {
+    var allItems = collectAssessments();
+    assessBoard.innerHTML = '';
+    var list = boardModules();
+    var shown = list.filter(function (m) { return moduleStats(m, allItems).items.length > 0; });
+    assessBoard.style.gridTemplateColumns = 'repeat(' + Math.max(1, Math.min(shown.length, 4)) + ', minmax(0, 1fr))';
+
+    shown.forEach(function (m) {
+      var st = moduleStats(m, allItems);
+      var col = el('div', 'assess-col');
+      col.style.borderTopColor = m.color;
+
+      var head = el('div', 'assess-col-head');
+      var title = el('div', 'assess-col-title');
+      var dot = el('span', 'assess-col-dot');
+      dot.style.background = m.color;
+      title.appendChild(dot);
+      title.appendChild(el('span', 'assess-col-name', m.name));
+      head.appendChild(title);
+      col.appendChild(head);
+
+      var meta = el('div', 'assess-col-meta');
+      var n = st.items.length;
+      var ws = weightStatus(st);
+      meta.appendChild(el('span', null, n + (n === 1 ? ' assessment' : ' assessments')));
+      var tot = el('span', 'assess-col-total ' + ws.cls, 'Required ' + (st.weighted ? st.total : 0) + '%');
+      tot.title = ws.text;
+      meta.appendChild(tot);
+      col.appendChild(meta);
+      var bar = el('div', 'assess-col-bar');
+      var fill = el('div', 'assess-col-fill');
+      fill.style.width = Math.min(100, st.weighted ? st.total : 0) + '%';
+      fill.style.background = st.total > 100 ? '#dc2626' : m.color;
+      bar.appendChild(fill);
+      col.appendChild(bar);
+      col.appendChild(el('div', 'assess-col-status ' + ws.cls, ws.text));
+
+      var body = el('div', 'assess-col-body');
+      if (!n) body.appendChild(el('div', 'assess-col-empty', 'Nothing scheduled yet. Add one below or click a day on the calendar.'));
+      else st.items.forEach(function (entry) { body.appendChild(buildAssessCard(entry)); });
+      col.appendChild(body);
+      assessBoard.appendChild(col);
+    });
+
+    if (!list.length) {
+      assessBoard.appendChild(el('div', 'assess-board-empty', 'No modules yet. Add one under Settings.'));
+    } else if (!shown.length) {
+      var empty = el('div', 'assess-board-empty');
+      empty.appendChild(el('div', 'assess-board-empty-title', 'No assessments yet'));
+      empty.appendChild(el('div', null, 'Add one below, or click a day on the calendar and choose Assessment. A module appears here once it has an assessment.'));
+      assessBoard.appendChild(empty);
+    }
+  }
+
+  function openAssessModal() {
+    populateModuleSelects();
+    renderAssessBoard();
+    assessDate.value = '';
+    assessModuleSelect.selectedIndex = 0;
+    assessWeight.value = '';
+    assessTime.value = DEFAULT_TIME;
+    setDuration(assessDurH, assessDurM, DEFAULT_DURATION);
+    assessText.value = '';
+    openModal(assessModal, assessDate);
+  }
+  function closeAssessModal() { closeModal(assessModal); }
+
+  assessNavBtn.addEventListener('click', openAssessModal);
+  assessCloseBtn.addEventListener('click', closeAssessModal);
+  assessPrintBtn.addEventListener('click', printAssessments);
+  assessModal.addEventListener('click', function (e) { if (e.target === assessModal) closeAssessModal(); });
+
+  assessAddForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var dateKey = assessDate.value;
+    var cls = assessModuleSelect.value;
+    var text = assessText.value.trim();
+    var weight = assessWeight.value !== '' ? Number(assessWeight.value) : undefined;
+    var time = assessTime.value || undefined;
+    var duration = time && readDuration(assessDurH, assessDurM) ? readDuration(assessDurH, assessDurM) : undefined;
+    if (!dateKey || !cls || !text) return;
+    if (!cellByDate[dateKey]) { assessDate.setCustomValidity('Choose a date between 1 Sep 2026 and 31 Aug 2027'); assessDate.reportValidity(); assessDate.setCustomValidity(''); return; }
+    if (!customEvents[dateKey]) customEvents[dateKey] = [];
+    customEvents[dateKey].push({ id: newId(), text: text, cls: cls, weight: weight, time: time, duration: duration });
+    saveStore('customEvents', customEvents);
+    afterDataChange(dateKey);
+    assessDate.value = '';
+    assessModuleSelect.selectedIndex = 0;
+    assessWeight.value = '';
+    assessTime.value = DEFAULT_TIME;
+    setDuration(assessDurH, assessDurM, DEFAULT_DURATION);
+    assessText.value = '';
+    assessDate.focus();
+  });
+
+  // ---------- Printable assessment schedule ----------
+  function renderAssessPrint() {
+    var allItems = collectAssessments();
+    var list = boardModules().filter(function (m) { return moduleStats(m, allItems).items.length > 0; });
+    assessPrint.innerHTML = '';
+
+    var head = el('div', 'ap-header');
+    var left = el('div');
+    left.appendChild(el('h1', null, 'Assessment Schedule'));
+    left.appendChild(el('div', 'ap-sub', 'Academic Year 2026–27'));
+    head.appendChild(left);
+    var now = new Date();
+    head.appendChild(el('div', 'ap-meta', 'Printed ' + now.getDate() + ' ' + MONTH_SHORT[now.getMonth()] + ' ' + now.getFullYear()));
+    assessPrint.appendChild(head);
+
+    if (!list.length) { assessPrint.appendChild(el('p', 'ap-empty', 'No modules to show.')); return; }
+
+    // Summary strip
+    var summary = el('div', 'ap-summary');
+    list.forEach(function (m) {
+      var st = moduleStats(m, allItems);
+      var chip = el('div', 'ap-chip');
+      var dot = el('span', 'ap-dot');
+      dot.style.background = m.color;
+      chip.appendChild(dot);
+      var txt = el('div', 'ap-chip-text');
+      txt.appendChild(el('div', 'ap-chip-name', m.name));
+      txt.appendChild(el('div', 'ap-chip-sub', st.items.length + (st.items.length === 1 ? ' assessment' : ' assessments') + ' \u00b7 ' + weightStatus(st).text));
+      chip.appendChild(txt);
+      summary.appendChild(chip);
+    });
+    assessPrint.appendChild(summary);
+
+    // One block per module
+    var cols = el('div', 'ap-columns');
+    list.forEach(function (m) {
+      var st = moduleStats(m, allItems);
+      var block = el('section', 'ap-module');
+      block.style.borderLeftColor = m.color;
+      var bh = el('div', 'ap-module-head');
+      bh.style.background = hexToRgba(m.color, 0.12);
+      bh.appendChild(el('h2', null, m.name));
+      var right = el('div', 'ap-module-right');
+      var wsp = weightStatus(st);
+      var t = el('span', 'ap-module-total ' + wsp.cls, 'Required ' + (st.weighted ? st.total : 0) + '%');
+      right.appendChild(t);
+      bh.appendChild(right);
+      block.appendChild(bh);
+
+      if (!st.items.length) {
+        block.appendChild(el('p', 'ap-none', 'No assessments scheduled.'));
+      } else {
+        var table = el('table', 'ap-table');
+        var thead = el('thead');
+        var hr = el('tr');
+        ['Date', 'Week', 'Time', 'Assessment', 'Weight'].forEach(function (h, i) { var th = el('th', i === 4 ? 'num' : null, h); hr.appendChild(th); });
+        thead.appendChild(hr);
+        table.appendChild(thead);
+        var tbody = el('tbody');
+        st.items.forEach(function (entry) {
+          var tr = el('tr');
+          var d = parseKey(entry.dateKey);
+          tr.appendChild(el('td', 'ap-date', DAY_SHORT[d.getDay()] + ' ' + d.getDate() + ' ' + MONTH_SHORT[d.getMonth()] + ' ' + d.getFullYear()));
+          tr.appendChild(el('td', 'ap-week', weekLabelFor(entry.dateKey) || '—'));
+          tr.appendChild(el('td', 'ap-time', timeDetail(entry.ev) || '—'));
+          tr.appendChild(el('td', null, entry.ev.text));
+          tr.appendChild(el('td', 'num', hasWeight(entry.ev) ? entry.ev.weight + '%' : '—'));
+          tbody.appendChild(tr);
+        });
+        var foot = el('tfoot');
+        var fr = el('tr', 'ap-total-row');
+        fr.appendChild(el('td', null, ''));
+        fr.appendChild(el('td', null, ''));
+        fr.appendChild(el('td', null, ''));
+        fr.appendChild(el('td', null, 'Required total'));
+        fr.appendChild(el('td', 'num', (st.weighted ? st.total : 0) + '%'));
+        foot.appendChild(fr);
+        if (wsp.missing > 0 || wsp.cls === 'over') {
+          var mr = el('tr', 'ap-missing-row ' + wsp.cls);
+          mr.appendChild(el('td', null, ''));
+          mr.appendChild(el('td', null, ''));
+          mr.appendChild(el('td', null, ''));
+          mr.appendChild(el('td', null, wsp.cls === 'over' ? 'Over-allocated by' : 'Still to be scheduled'));
+          mr.appendChild(el('td', 'num', (wsp.cls === 'over' ? st.total - 100 : wsp.missing) + '%'));
+          foot.appendChild(mr);
+        }
+        table.appendChild(tbody);
+        table.appendChild(foot);
+        block.appendChild(table);
+      }
+      cols.appendChild(block);
+    });
+    assessPrint.appendChild(cols);
+
+    // Chronological view across modules
+    var items = allItems.filter(function (e) { return list.some(function (m) { return m.cls === e.ev.cls; }); });
+    if (items.length > 1) {
+      var chrono = el('section', 'ap-module ap-chrono');
+      var ch = el('div', 'ap-module-head');
+      ch.appendChild(el('h2', null, 'All assessments in date order'));
+      chrono.appendChild(ch);
+      var table2 = el('table', 'ap-table');
+      var thead2 = el('thead');
+      var hr2 = el('tr');
+      ['Date', 'Week', 'Time', 'Module', 'Assessment', 'Weight'].forEach(function (h, i) { hr2.appendChild(el('th', i === 5 ? 'num' : null, h)); });
+      thead2.appendChild(hr2);
+      table2.appendChild(thead2);
+      var tbody2 = el('tbody');
+      items.forEach(function (entry) {
+        var m = moduleByCls(entry.ev.cls);
+        var tr = el('tr');
+        var d = parseKey(entry.dateKey);
+        tr.appendChild(el('td', 'ap-date', DAY_SHORT[d.getDay()] + ' ' + d.getDate() + ' ' + MONTH_SHORT[d.getMonth()] + ' ' + d.getFullYear()));
+        tr.appendChild(el('td', 'ap-week', weekLabelFor(entry.dateKey) || '—'));
+        tr.appendChild(el('td', 'ap-time', timeDetail(entry.ev) || '—'));
+        var mtd = el('td', 'ap-modcell');
+        var md = el('span', 'ap-dot');
+        md.style.background = m.color;
+        mtd.appendChild(md);
+        mtd.appendChild(document.createTextNode(m.name));
+        tr.appendChild(mtd);
+        tr.appendChild(el('td', null, entry.ev.text));
+        tr.appendChild(el('td', 'num', hasWeight(entry.ev) ? entry.ev.weight + '%' : '—'));
+        tbody2.appendChild(tr);
+      });
+      table2.appendChild(tbody2);
+      chrono.appendChild(table2);
+      assessPrint.appendChild(chrono);
+    }
+  }
+
+  // ---------- Settings: modules, backup, restore ----------
+  var settingsModal = document.getElementById('settingsModal');
+  var settingsBtn = document.getElementById('settingsBtn');
+  var settingsCloseBtn = document.getElementById('settingsCloseBtn');
+  var moduleList = document.getElementById('moduleList');
+  var moduleAddForm = document.getElementById('moduleAddForm');
+  var moduleAddName = document.getElementById('moduleAddName');
+  var exportJsonBtn = document.getElementById('exportJsonBtn');
+  var importJsonBtn = document.getElementById('importJsonBtn');
+  var importJsonFile = document.getElementById('importJsonFile');
+  var exportIcsBtn = document.getElementById('exportIcsBtn');
+  var importNote = document.getElementById('importNote');
+  var hiddenCountNote = document.getElementById('hiddenCountNote');
+  var restoreOfficialBtn = document.getElementById('restoreOfficialBtn');
+  var restoreArmed = null;
+
+  function hiddenOfficialCount() {
+    var n = 0;
+    Object.keys(hiddenEvents).forEach(function (k) { n += (hiddenEvents[k] || []).length; });
+    return n;
+  }
+  function renderSettings() {
+    moduleList.innerHTML = '';
+    modules.forEach(function (m, idx) {
+      var row = el('div', 'module-row');
+      var colorBtn = el('button', 'mod-color');
+      colorBtn.type = 'button';
+      colorBtn.style.background = m.color;
+      colorBtn.title = 'Click to change colour';
+      colorBtn.setAttribute('aria-label', 'Change colour for ' + m.name);
+      colorBtn.addEventListener('click', function () {
+        var i = MODULE_PALETTE.indexOf(m.color);
+        m.color = MODULE_PALETTE[(i + 1) % MODULE_PALETTE.length];
+        saveStore('modules', modules);
+        afterModulesChange();
+      });
+      var nameInput = el('input');
+      nameInput.type = 'text';
+      nameInput.value = m.name;
+      nameInput.setAttribute('aria-label', 'Module name');
+      nameInput.addEventListener('change', function () {
+        var v = nameInput.value.trim();
+        if (!v) { nameInput.value = m.name; return; }
+        m.name = v;
+        saveStore('modules', modules);
+        afterModulesChange();
+      });
+      var count = moduleAssessmentCount(m.cls);
+      var countEl = el('span', 'mod-count', count + (count === 1 ? ' assessment' : ' assessments'));
+      var delBtn = el('button', 'mod-del', 'Remove');
+      delBtn.type = 'button';
+      delBtn.disabled = count > 0;
+      delBtn.title = count > 0 ? 'Delete its assessments first' : 'Remove this module';
+      delBtn.addEventListener('click', function () {
+        modules.splice(idx, 1);
+        saveStore('modules', modules);
+            afterModulesChange();
+      });
+      row.appendChild(colorBtn);
+      row.appendChild(nameInput);
+      row.appendChild(countEl);
+      row.appendChild(delBtn);
+      moduleList.appendChild(row);
+    });
+    var n = hiddenOfficialCount();
+    hiddenCountNote.textContent = n ? n + (n === 1 ? ' official event is' : ' official events are') + ' currently removed from your view (deleted or edited).' : 'All official events are showing.';
+    restoreOfficialBtn.disabled = !n;
+    restoreOfficialBtn.textContent = 'Restore removed official events';
+    restoreArmed = null;
+  }
+  function afterModulesChange() {
+    populateModuleSelects();
+    renderNavDots();
+    afterDataChange(null);
+  }
+  moduleAddForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = moduleAddName.value.trim();
+    if (!name) return;
+    var used = modules.map(function (m) { return m.color; });
+    var color = MODULE_PALETTE.filter(function (c) { return used.indexOf(c) === -1; })[0] || MODULE_PALETTE[modules.length % MODULE_PALETTE.length];
+    modules.push({ cls: 'chip-mod-' + hashStr(name + Date.now()), name: name, color: color });
+    saveStore('modules', modules);
+    moduleAddName.value = '';
+    afterModulesChange();
+  });
+  restoreOfficialBtn.addEventListener('click', function () {
+    if (restoreArmed) {
+      clearTimeout(restoreArmed);
+      restoreArmed = null;
+      var count = hiddenOfficialCount();
+      hiddenEvents = {};
+      saveStore('hiddenEvents', hiddenEvents);
+      afterDataChange(null);
+      showToast('Restored ' + count + ' official ' + (count === 1 ? 'event' : 'events') + '. Your own events were kept.');
+      return;
+    }
+    restoreOfficialBtn.textContent = 'Click again to confirm';
+    restoreArmed = setTimeout(function () { restoreArmed = null; restoreOfficialBtn.textContent = 'Restore removed official events'; }, 4000);
+  });
+
+  function download(filename, text, mime) {
+    var blob = new Blob([text], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  }
+  exportJsonBtn.addEventListener('click', function () {
+    var payload = { app: 'atu-academic-calendar', academicYear: AY, exported: new Date().toISOString(), modules: modules, customEvents: customEvents, hiddenEvents: hiddenEvents };
+    download('ATU_Calendar_' + AY + '_backup_' + toKey(new Date()) + '.json', JSON.stringify(payload, null, 2), 'application/json');
+    setNote('Backup downloaded.', 'ok');
+  });
+  importJsonBtn.addEventListener('click', function () { importJsonFile.value = ''; importJsonFile.click(); });
+  importJsonFile.addEventListener('change', function () {
+    var file = importJsonFile.files && importJsonFile.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        if (!data || data.app !== 'atu-academic-calendar' || typeof data.customEvents !== 'object') throw new Error('Not a calendar backup file');
+        if (data.academicYear && data.academicYear !== AY) throw new Error('That backup is for ' + data.academicYear + ', this calendar is ' + AY);
+        customEvents = data.customEvents || {};
+        hiddenEvents = data.hiddenEvents || {};
+        if (Array.isArray(data.modules) && data.modules.length) modules = data.modules.filter(function (m) { return m && m.cls && m.name && m.color; });
+        migrateHiddenIds();
+        persistAll();
+        afterModulesChange();
+        var n = 0;
+        Object.keys(customEvents).forEach(function (k) { n += customEvents[k].length; });
+        setNote('Imported ' + n + ' of your events and ' + modules.length + ' modules.', 'ok');
+      } catch (err) {
+        setNote('Import failed: ' + err.message, 'err');
+      }
+    };
+    reader.readAsText(file);
+  });
+  function setNote(text, kind) {
+    importNote.hidden = false;
+    importNote.textContent = text;
+    importNote.className = 'st-note ' + (kind || '');
+  }
+  function icsEscape(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n'); }
+  exportIcsBtn.addEventListener('click', function () {
+    var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//ATU Academic Calendar ' + AY + '//EN', 'CALSCALE:GREGORIAN'];
+    var stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+    var n = 0;
+    Object.keys(customEvents).sort().forEach(function (dateKey) {
+      customEvents[dateKey].forEach(function (ev) {
+        var d = parseKey(dateKey);
+        var next = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+        var summary = displayText(ev) + (ev.weight !== undefined && ev.weight !== null && ev.weight !== '' ? ' (' + ev.weight + '%)' : '');
+        var dayPart = dateKey.replace(/-/g, '');
+        var dtLines;
+        if (hasTime(ev)) {
+          var endT = addMinutes(ev.time, ev.duration || 60);
+          dtLines = ['DTSTART:' + dayPart + 'T' + ev.time.replace(':', '') + '00', 'DTEND:' + dayPart + 'T' + endT.replace(':', '') + '00'];
+        } else {
+          dtLines = ['DTSTART;VALUE=DATE:' + dayPart, 'DTEND;VALUE=DATE:' + toKey(next).replace(/-/g, '')];
+        }
+        lines.push('BEGIN:VEVENT', 'UID:' + ev.id + '@atu-calendar', 'DTSTAMP:' + stamp, dtLines[0], dtLines[1],
+          'SUMMARY:' + icsEscape(summary), 'END:VEVENT');
+        n++;
+      });
+    });
+    lines.push('END:VCALENDAR');
+    if (!n) { setNote('You have no events of your own to export yet.', 'err'); return; }
+    download('ATU_Calendar_' + AY + '_my_events.ics', lines.join('\r\n') + '\r\n', 'text/calendar');
+    setNote('Exported ' + n + ' ' + (n === 1 ? 'event' : 'events') + ' as .ics (import it into Outlook or Google Calendar).', 'ok');
+  });
+
+  function openSettingsModal() { importNote.hidden = true; renderSettings(); openModal(settingsModal); }
+  function closeSettingsModal() { closeModal(settingsModal); }
+  settingsBtn.addEventListener('click', openSettingsModal);
+  settingsCloseBtn.addEventListener('click', closeSettingsModal);
+  settingsModal.addEventListener('click', function (e) { if (e.target === settingsModal) closeSettingsModal(); });
+
+  // ---------- Printing ----------
+  // Bars and "+N more" are measured in JS, and the browser gives scripts no chance
+  // to run once print layout starts. So before printing, the pages are put into
+  // their A4 size on screen and measured there; afterwards the screen size returns.
+  var printPrepared = false;
+  function preparePrintLayout() {
+    if (printPrepared) return;
+    printPrepared = true;
+    document.body.classList.add('print-layout');
+    setGridRows(false);
+    var all = frames.slice();
+    if (overviewFrame) all.push(overviewFrame);
+    all.forEach(function (frame) {
+      var page = frame.querySelector('.page');
+      page.style.width = '297mm';
+      page.style.height = '210mm';
+      page.style.minHeight = '';
+    });
+    layoutAll();
+  }
+  function restoreScreenLayout() {
+    if (!printPrepared) return;
+    printPrepared = false;
+    document.body.classList.remove('print-layout');
+    var all = frames.slice();
+    if (overviewFrame) all.push(overviewFrame);
+    all.forEach(function (frame) { frame.querySelector('.page').style.height = ''; });
+    fitPages();
+    layoutAll();
+  }
+  function printOnly(bodyClass, prepare) {
+    document.body.classList.add(bodyClass);
+    if (prepare) prepare();
+    function cleanup() {
+      document.body.classList.remove(bodyClass);
+      frames.forEach(function (f) { f.classList.remove('print-target'); });
+      window.removeEventListener('afterprint', cleanup);
+      restoreScreenLayout();
+    }
+    window.addEventListener('afterprint', cleanup);
+    preparePrintLayout();
+    window.print();
+    setTimeout(cleanup, 5000);
+  }
+  function printWholeCalendar() { preparePrintLayout(); window.print(); setTimeout(restoreScreenLayout, 5000); }
+  function printMonth(pageIndex) {
+    var frame = frames[pageIndex];
+    if (!frame) return;
+    printOnly('print-mode-month', function () { frame.classList.add('print-target'); });
+  }
+  function printAssessments() { renderAssessPrint(); printOnly('print-mode-assessments'); }
+  // Re-measure bars and overflow for the A4 layout, then again for the screen
+  window.addEventListener('beforeprint', preparePrintLayout);
+  window.addEventListener('afterprint', restoreScreenLayout);
+
+  frames.forEach(function (frame, i) {
+    var headerRight = frame.querySelector('.header-right');
+    if (!headerRight) return;
+    var btn = el('button', 'print-month-btn', '\ud83d\udda8 Print this month');
+    btn.type = 'button';
+    btn.addEventListener('click', function () { printMonth(i); });
+    headerRight.appendChild(btn);
+  });
+  document.getElementById('printCalBtn').addEventListener('click', printWholeCalendar);
+
+  // ---------- Screen sizing + navigation ----------
+  // On screen, a week row takes an equal share of the page but grows on its own
+  // when its events need more room; in print every row is a fixed equal share.
+  function setGridRows(screen) {
+    frames.forEach(function (frame) {
+      var grid = frame.querySelector('.grid');
+      if (!grid) return;
+      var n = grid.getAttribute('data-rows');
+      if (!n) {
+        var m = /repeat\((\d+)/.exec(grid.getAttribute('style') || '');
+        n = m ? m[1] : String(grid.querySelectorAll('.week').length);
+        grid.setAttribute('data-rows', n);
+      }
+      grid.style.gridTemplateRows = 'repeat(' + n + ', 1fr)';
+    });
+  }
+  function fitPages() {
+    var navIsFixed = nav && getComputedStyle(nav).position === 'fixed';
+    var availW = main.clientWidth - 16;
+    var availH = window.innerHeight - (navIsFixed ? 0 : nav.offsetHeight) - 16;
+    var all = frames.slice();
+    if (overviewFrame) all.push(overviewFrame);
+    all.forEach(function (frame) {
+      var page = frame.querySelector('.page');
+      page.style.width = availW + 'px';
+      if (frame === overviewFrame) { page.style.minHeight = availH + 'px'; page.style.height = ''; }
+      else { page.style.height = availH + 'px'; page.style.minHeight = ''; }
+    });
+    setGridRows(true);
+  }
+
+  var keydatesBtn = document.getElementById('keydatesBtn');
+  function setActive(index) {
+    navButtons.forEach(function (btn, i) { btn.classList.toggle('active', i === index); });
+    keydatesBtn.classList.toggle('active', index === frames.length);
+  }
+  var activeIndex = 0;
+  function goToMonth(index, smooth) {
+    var frame = index === frames.length ? overviewFrame : frames[index];
+    if (!frame) return;
+    frame.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    activeIndex = index;
+    setActive(index);
+  }
+  navButtons.forEach(function (btn, i) { btn.addEventListener('click', function () { goToMonth(i, true); }); });
+  keydatesBtn.addEventListener('click', function () { goToMonth(frames.length, true); });
+
+  function currentMonthIndex() {
+    var now = new Date();
+    return monthKeys.findIndex(function (p) { return p[0] === now.getFullYear() && p[1] === now.getMonth() + 1; });
+  }
+  function jumpToCurrentMonth(smooth) {
+    var index = currentMonthIndex();
+    goToMonth(index === -1 ? 0 : index, smooth);
+  }
+  document.getElementById('todayBtn').addEventListener('click', function () {
+    jumpToCurrentMonth(true);
+    var today = document.querySelector('.cell.today');
+    if (today) setTimeout(function () { today.focus({ preventScroll: true }); }, 400);
+  });
+
+  // Keep the sidebar in step with wheel/keyboard scrolling
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var idx = entry.target === overviewFrame ? frames.length : frames.indexOf(entry.target);
+        activeIndex = idx;
+        setActive(idx);
+      });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    frames.forEach(function (f) { io.observe(f); });
+    if (overviewFrame) io.observe(overviewFrame);
+  }
+
+  // Arrow keys move between months when no modal or input has focus
+  document.addEventListener('keydown', function (e) {
+    if (openModals.length) return;
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); goToMonth(Math.min(frames.length, activeIndex + 1), true); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goToMonth(Math.max(0, activeIndex - 1), true); }
+    else if (e.key === 'Home') { e.preventDefault(); goToMonth(0, true); }
+    else if (e.key === 'End') { e.preventDefault(); goToMonth(frames.length, true); }
+  });
+
+  // ---------- Boot ----------
+  buildIndex();
+  migrateHiddenIds();
+  buildOverview();
+  populateModuleSelects();
+  renderNavDots();
+  renderAll();
+
+  window.addEventListener('resize', scheduleLayout);
+  try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+  function boot() {
+    fitPages();
+    layoutAll();
+    jumpToCurrentMonth(false);
+    // Fonts and late layout can shift the page after the first jump, so settle on the month again
+    setTimeout(function () { layoutAll(); jumpToCurrentMonth(false); }, 250);
+    setTimeout(function () { jumpToCurrentMonth(false); }, 900);
+  }
+  if (document.readyState === 'complete') boot(); else window.addEventListener('load', boot);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layoutAll(); jumpToCurrentMonth(false); });
+  window.addEventListener('pageshow', function (e) { if (e.persisted) jumpToCurrentMonth(false); });
+})();
+</script>
+
+</body>
+</html>

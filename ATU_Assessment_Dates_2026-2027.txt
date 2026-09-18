@@ -1,0 +1,99 @@
+ATU Assessment Dates 2026–2027
+================================
+
+All dates are in the 2026–2027 academic year.
+
+CHRONOLOGICAL SCHEDULE
+----------------------
+
+Saturday 17 October 2026
+  WebAD — MCQ1                                      10%
+
+Monday 2 November 2026
+  SDPD — Lab Exam 1                                 10%
+
+Thursday 5 November 2026
+  SDPD — MCQ1                                       7.5%
+
+Tuesday 10 November 2026
+  CSSP — Moodle Quiz                                20%
+
+Saturday 14 November 2026
+  WebAD — MCQ2                                      20%
+
+Thursday 10 December 2026
+  SDPD — MCQ2                                       7.5%
+
+Saturday 12 December 2026
+  WebAD — MCQ3                                      30%
+
+Monday 14 December 2026
+  SDPD — Lab Exam 2                                 10%
+
+Tuesday 15 December 2026
+  CSSP — Written Exam                               50%
+
+Monday 11 January 2027
+  WebAD — Project Submission                        40%
+  CSSP — Project Submission                         30%
+
+Thursday 21 January 2027
+  SDPD — Micro 1                                    1%
+
+Thursday 28 January 2027
+  SDPD — Micro 2                                    1%
+
+Thursday 4 February 2027
+  SDPD — Micro 3                                    1%
+
+Thursday 11 February 2027
+  SDPD — Micro 4                                    1%
+
+Thursday 18 February 2027
+  SDPD — Micro 5                                    1%
+
+Thursday 25 February 2027
+  SDPD — Micro 6                                    1%
+
+Monday 1 March 2027
+  SDPD — Lab Exam 3                                 20%
+
+Thursday 4 March 2027
+  SDPD — MCQ3                                       7.5%
+
+Thursday 11 March 2027
+  SDPD — Micro 7                                    1%
+
+Thursday 18 March 2027
+  SDPD — Micro 8                                    1%
+
+Thursday 8 April 2027
+  SDPD — Micro 9                                    1%
+
+Thursday 15 April 2027
+  SDPD — Micro 10                                   1%
+
+Thursday 22 April 2027
+  SDPD — MCQ4                                       7.5%
+
+Monday 26 April 2027
+  SDPD — Lab Exam 4                                 20%
+
+Thursday 29 April 2027
+  SDPD — MCQ5 (optional)                             7.5%
+
+
+MODULE TOTALS
+-------------
+
+SDPD — Software Design & Program Development
+  Required total: 100%
+  Optional: MCQ5 is not included in the required total;
+            the best 4 of the 5 MCQs count.
+  Micro assessments: 10 × 1%
+
+WebAD — Web Application Development
+  Total: 100%
+
+CSSP — Cybersecurity & Secure Programming
+  Total: 100%
